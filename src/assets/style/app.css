@@ -1,0 +1,64 @@
+/* 全局样式调整 */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ul */
+ul{
+    list-style: none;
+}
+
+/* el-input */
+.el-input-group__append{
+    border-color: #5dd5c8;
+}
+.el-input__inner:focus{
+    border-color: #5dd5c8;
+}
+
+/* el-button */
+.el-button{
+    padding: 0;
+    color: #fff;
+}
+.el-button--default{
+    color: #ffffff;
+    border-color: #00d7c6;
+    background: transparent;
+}
+.el-button--primary{
+    color: #ffffff;
+    border-color: #5dd5c8;
+    background: #5dd5c8;
+}
+
+.el-button--default.is-round:hover,
+.el-button--default.is-round:focus{
+    color: #00d7c6;
+    border-color: #00d7c6;
+    background: transparent;
+}
+.el-button--default.is-round:active{
+    opacity: .8;
+}
+
+.el-button + .el-button{
+    margin-left: 20px;
+}
+
+/* el-link */
+.el-link.el-link--default{
+    color: #fff;
+    vertical-align: top;
+}
+.el-link.el-link--default:hover{
+    color: #00d7c6;
+}
+.el-link::after{
+    display: none;
+}
+.el-link + .el-link{
+    margin-left: 20px;
+}
