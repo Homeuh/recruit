@@ -4,7 +4,9 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+body{
+    font-size: 14px;
+}
 /* ul */
 ul{
     list-style: none;
@@ -27,6 +29,16 @@ ul{
     color: #ffffff;
     border-color: #00d7c6;
     background: transparent;
+}
+.el-button--text{
+    color: #00c2b3;
+}
+.el-button--text:hover,
+.el-button--text:focus{
+    color: #00d7c6;
+}
+.el-button--text:active{
+    color: #1abc9c;
 }
 .el-button--primary{
     color: #ffffff;
@@ -52,6 +64,7 @@ ul{
 .el-link.el-link--default{
     color: #fff;
     vertical-align: top;
+    transition: color .5s;
 }
 .el-link.el-link--default:hover{
     color: #00d7c6;
