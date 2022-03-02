@@ -10,6 +10,7 @@ import {
     Button,
     Carousel,
     CarouselItem,
+    Divider,
     Link,
     Input
 } from 'element-ui'
@@ -17,6 +18,7 @@ import {
 Vue.use(Button)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+Vue.use(Divider)
 Vue.use(Link)
 Vue.use(Input)
 

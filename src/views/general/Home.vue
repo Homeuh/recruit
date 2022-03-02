@@ -60,9 +60,112 @@
           </el-carousel>
         </div>
       </div>
+      <!-- 热门职位 -->
+      <div class="common-tab-box hot-city-job">
+        <h2 class="box-title">热门职位</h2>
+        <el-link class="job-link">更多热门职位</el-link>
+        <ul>
+          <li v-for="(job,index) in hotJob" :key="job.name + index">
+            <div class="sub-li">
+              <el-link class="job-link">
+                <span>{{ job.name }}</span>
+                <span><i class="el-icon-chat-dot-round"></i></span>
+                <span>{{ job.salary }}</span>
+              </el-link>
+              <div class="job-premise">
+                <span>{{ job.experience }}</span>
+                <el-divider direction="vertical"></el-divider>
+                <span>{{ job.qualification }}</span>
+              </div>
+              <div class="job-tag">
+                <div v-for="item in job.tag" :key="item">{{ item }}</div>
+              </div>
+              <div class="company">
+                <el-link><img :src="job.companyIcon" alt="job.companyName" style="width: 40px; height: 40px; object-fit: cover"></el-link>
+                <div class="company-box">
+                  <div>{{ job.companyName }}</div>
+                  <div>{{ job.companyTag }}</div>
+                  <el-divider direction="vertical"></el-divider>
+                  <div>{{ job.companySize }}</div>
+                  <el-divider direction="vertical"></el-divider>
+                  <div>{{ job.address }}</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- 热门企业 -->
+      <div class="common-tab-box hot-company">
+        <h2 class="box-title">热门企业</h2>
+        <ul>
+          <li v-for="(company,index) in hotCompany" :key="company.name + index">
+            <div class="sub-li">
+              <div class="company-introduction">
+                <p><el-link><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
+                <h3>{{ company.name }}</h3>
+                <h4>
+                  {{ company.tag }}
+                  <el-divider direction="vertical"></el-divider>
+                  {{ company.size }}
+                </h4>
+                <h4 :title="company.description">{{ company.description }}</h4>
+              </div>
+              <div class="company-recruit">
+                <el-link class="job-link">
+                  <p>{{ company.userComment }}</p>
+                  <p>面试评价</p>
+                </el-link>
+                <el-link class="job-link">
+                  <p>{{ company.recruit }}</p>
+                  <p>在招职位</p>
+                </el-link>
+                <el-link class="job-link">
+                  <p>{{ company.activity }}%</p>
+                  <p>面试处理率</p>
+                </el-link>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <el-link class="show-more">查看更多</el-link>
+      </div>
     </main>
     <footer>
-
+      <div class="wrapper">
+        <div class="inner-wrapper">
+          <div class="user-feedback">
+            <p>合作请咨询管理员</p>
+            <img :src="require('@/image/admin.jpg')" style="width: 200px; height: 200px; object-fit: cover"/>
+          </div>
+          <div class="company-service">
+            <h3>企业服务</h3>
+            <div class="company-service-link">
+              <el-link>招聘必备法典</el-link>
+              <el-link>公司搜索</el-link>
+              <el-link>万优APP</el-link>
+            </div>
+          </div>
+          <div class="usage-help">
+            <h3>使用与帮助</h3>
+            <div class="usage-help-link">
+              <el-link>用户协议</el-link>
+              <el-link>个人隐私政策</el-link>
+              <el-link>防骗指南</el-link>
+              <el-link>使用帮助</el-link>
+            </div>
+          </div>
+          <div class="contact-info">
+            <h3>万家优聘</h3>
+            <div class="contact-info-link">
+              <p>服务热线：400 280 2800</p>
+              <p>举报热线：400 820 8200</p>
+              <p>企业邮箱：850609866@qq.com</p>
+              <p>联系我们</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -76,6 +179,7 @@ export default {
     mounted() {
       this.jobMenuHover();
       this.marginTop();
+      this.footerMargin();
     },
     data() {
         return {
@@ -324,25 +428,106 @@ export default {
             ],
             bannerImg: [
                 {
-                    href: "", url: require("@/assets/image/banner1.jpg")
+                    href: "", url: require("@/image/banner/banner1.jpg")
                 },
                 {
-                    href: "", url: require("@/assets/image/banner2.jpg")
+                    href: "", url: require("@/image/banner/banner2.jpg")
                 },
                 {
-                    href: "", url: require("@/assets/image/banner3.jpg")
+                    href: "", url: require("@/image/banner/banner3.jpg")
                 },
                 {
-                    href: "", url: require("@/assets/image/banner4.jpg")
+                    href: "", url: require("@/image/banner/banner4.jpg")
                 },
                 {
-                    href: "", url: require("@/assets/image/banner5.jpg")
+                    href: "", url: require("@/image/banner/banner5.jpg")
                 },
+            ],
+            hotJob: [
+                {
+                    name: "前端工程师", experience: "1年以内", qualification: "本科",salary: "10-15K",
+                    tag: ["JavaScript","Vue","React"], companyIcon: require("@/image/company/xunlei.jpg"),
+                    companyName: "迅雷网络", companyTag: "移动互联网", companySize: "1000-5000人", address: "深圳·南山"
+                },
+                {
+                    name: "Web前端开发工程师", experience: "1年-3年", qualification: "本科",salary: "10-20K·13薪",
+                    tag: ["电商平台","旅游 | 出行","Web前端"], companyIcon: require("@/image/company/kelu.jpg"),
+                    companyName: "KLOOK 客路旅行", companyTag: "旅游，出行", companySize: "50-100人", address: "深圳·福田"
+                },
+                {
+                    name: "前端开发工程师", experience: "经验不限", qualification: "不限",salary: "12-20K",
+                    tag: ["医疗 | 保健 | 美容","数据服务 | 咨询","JavaScript"], companyIcon: require("@/image/company/wegene.jpg"),
+                    companyName: "微基因 WeGene", companyTag: "移动互联网，医疗", companySize: "50-150人", address: "深圳·车公庙"
+                },
+                {
+                    name: "前端开发工程师", experience: "3年以上", qualification: "本科及以上",salary: "15-25K·14薪",
+                    tag: ["物联网","智能硬件","Html5"], companyIcon: require("@/image/company/guiqikeji.jpg"),
+                    companyName: "瑰琦科技", companyTag: "移动互联网，硬件", companySize: "50人以下", address: "深圳·南山"
+                },
+                {
+                    name: "Web前端开发工程师", experience: "1年及以上", qualification: "大专及以上",salary: "5-10K",
+                    tag: ["社交媒体","社交平台","web前端开发"], companyIcon: require("@/image/company/yunmai.jpg"),
+                    companyName: "云麦网络", companyTag: "MCN | 直播平台", companySize: "15-50人", address: "深圳·南山"
+                },
+                {
+                    name: "前端开发工程师", experience: "经验不限", qualification: "本科及以上",salary: "25-40K·15K",
+                    tag: ["移动端","小程序","web前端"], companyIcon: require("@/image/company/zijie.jpg"),
+                    companyName: "字节跳动", companyTag: "人工智能 | IM通讯", companySize: "5000人以上", address: "深圳·南山"
+                },
+                {
+                    name: "前端开发工程师", experience: "经验不限", qualification: "不限",salary: "13-26K",
+                    tag: ["软件服务 | 咨询","IT技术服务 | 咨询","React"], companyIcon: require("@/image/company/keruier.jpg"),
+                    companyName: "科瑞尔人力资源服务", companyTag: "企业服务", companySize: "2000人以上", address: "深圳·南山"
+                },
+                {
+                    name: "前端开发工程师", experience: "2年以上", qualification: "不限",salary: "12-24K·14薪",
+                    tag: ["TypeScript","Angular","SAAS"], companyIcon: require("@/image/company/siwei.jpg"),
+                    companyName: "思维巡航", companyTag: "软件服务", companySize: "15-50人", address: "深圳·南山"
+                },
+                {
+                    name: "中高级前端开发工程师", experience: "经验不限", qualification: "本科",salary: "8-15K",
+                    tag: ["JavaScript","React","TypeScript"], companyIcon: require("@/image/company/meituan.jpg"),
+                    companyName: "美团", companyTag: "消费生活", companySize: "2000人以上", address: "深圳·南山"
+                },
+            ],
+            hotCompany: [
+                {
+                    icon: require("@/image/company/youxikexue.jpg"), name: "游戏科学", tag: "游戏开发", size: "50-150人",
+                    description: "做全球领先的重度游戏开发商", userComment: 35, recruit: 21, activity: 100
+                },
+                {
+                    icon: require("@/image/company/weixuedianzi.jpg"), name: "微雪电子", tag: "电商平台", size: "50-150人",
+                    description: "我们实行合伙人制度，我们像是一个家", userComment: 4, recruit: 3, activity: 100
+                },
+                {
+                    icon: require("@/image/company/jieshun.jpg"), name: "捷顺科技股份", tag: "生活服务，智能硬件", size: "2000人以上",
+                    description: "上市公司、技术大牛、股权激励、食堂宿舍", userComment: 23, recruit: 44, activity: 86
+                },
+                {
+                    icon: require("@/image/company/guojiang.jpg"), name: "果酱时代", tag: "MCN | 直播平台", size: "50-150人",
+                    description: "专注产品，专注社交", userComment: 135, recruit: 6, activity: 86
+                },
+                {
+                    icon: require("@/image/company/youka.jpg"), name: "有咖互动", tag: "社交平台", size: "150-500人",
+                    description: "国内知名声音互动平台", userComment: 7, recruit: 31, activity: 100
+                },
+                {
+                    icon: require("@/image/company/xunlei.jpg"), name: "迅雷网络", tag: "工具类产品", size: "500-2000人",
+                    description: "基于共享经济的互联网云计算平台", userComment: 40, recruit: 142, activity: 100
+                },
+                {
+                    icon: require("@/image/company/shurui.jpg"), name: "数睿科技", tag: "生活服务 ", size: "150-500人",
+                    description: "上市公司，打造以「食 衣 住 行 育 」为发展蓝图的网络服务", userComment: 298, recruit: 30, activity: 100
+                },
+                {
+                    icon: require("@/image/company/benniao.jpg"), name: "笨鸟软件", tag: "数据服务,其他 ", size: "15-50人",
+                    description: "主攻国外市场，现产品约有300万活跃用户", userComment: 5, recruit: 3, activity: 100
+                }
             ]
         };
     },
     methods: {
-        //侧栏 更多职位隐藏菜单 --- 悬浮效果
+        // 侧栏 更多职位隐藏菜单 --- 悬浮效果
         jobMenuHover() {
             const homeSider = this.$refs.homeSider;
             const showMore = this.$refs.showMore;
@@ -381,6 +566,18 @@ export default {
                     subJobMenu[index].style.marginTop = marginTop + "px";
                 }
             });
+        },
+        // 计算footer右侧 相等的marginLeft值
+        footerMargin() {
+            const wrapper = document.querySelector(".wrapper");
+            const wrapper_width = $(wrapper).innerWidth();
+            console.log(wrapper_width)
+            const inner_wrapper = document.querySelector(".inner-wrapper");
+            const inner_wrapper_width = $(inner_wrapper).innerWidth();
+            const footer_right = document.querySelectorAll(".inner-wrapper div + div")
+            footer_right.forEach(item => {
+                item.style.marginLeft = (wrapper_width - inner_wrapper_width) / 3 + "px"
+            })
         }
     },
 }
@@ -389,7 +586,7 @@ export default {
 <style lang="less" scoped>
 .container {
     width: 100%;
-    height: 100vh;
+    overflow-y: scroll;
     background: #f6f6f8;
 }
 
@@ -398,6 +595,15 @@ export default {
 }
 .imargin {
     margin: 0 10%;
+}
+.el-link-active{
+    transition: .3s;
+    &:hover{
+        color: @mainColor;
+    }
+    &:active{
+        color: @activeColor;
+    }
 }
 
 @navColor: #00d7c6;
@@ -454,6 +660,7 @@ header {
 }
 
 @mainColor: #5dd5c8;
+@activeColor: #00c2b3;
 main {
     .tmargin();
     .search-form {
@@ -467,7 +674,7 @@ main {
                 font-size: 16px;
             };
             /deep/ .el-input-group__append {
-                background: #5dd5c8;
+                background: @mainColor;
                 color: #ffffff;
                 text-align: center;
                 padding: 0 50px;
@@ -514,7 +721,7 @@ main {
                 border-top: 1px dashed #ecedef;
                 height: 50px;
                 line-height: 50px;
-                color: #00c2b3;
+                color: @activeColor;
             }
         }
         .home-banner{
@@ -538,6 +745,258 @@ main {
                 /deep/ .el-link--inner{
                     width: 100%;
                     height: 100%;
+                }
+            }
+        }
+    }
+    .common-tab-box{
+        h2{
+            font-size: 26px;
+            font-weight: 400;
+            margin-top: 40px;
+            margin-bottom: 24px;
+            text-align: center;
+            &::before, &::after{
+                content: "";
+                display: inline-block;
+                vertical-align: 8px;
+                margin: 0 10px;
+                width: 50px;
+                height: 1px;
+                background: #d1d4db;
+            }
+        }
+        .sub-li{
+            background: #fff;
+            &:hover{
+                box-shadow: 0 0 10px 0 rgba(56,81,76,.12);
+            }
+        }
+    }
+    .hot-city-job{
+        > .el-link{
+            color: @mainColor;
+            font-weight: 400;
+            margin-bottom: 10px;
+            width: 98%;
+            justify-content: flex-end;
+            &:active{
+                color: @activeColor;
+            }
+        }
+        ul{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px 20px;
+            li{
+                .sub-li{
+                    padding: 20px 18px 10px;
+                    > .el-link{
+                        color: #414a60;
+                        .el-link-active();
+                        width: 100%;
+                        justify-content: space-between;
+                        /deep/ .el-link--inner{
+                            width: 100%;
+                            font-size: 15px;
+                            span:first-child{
+                                display: inline-block;
+                                margin-right: 10px;
+                            }
+                            span:nth-child(2){
+                                display: inline-block;
+                                color: #00d7c6;
+                                @keyframes hover{
+                                    25%{
+                                        transform: rotate(-15deg)
+                                    }
+                                    75%{
+                                        transform: rotate(15deg)
+                                    }
+                                }
+                                &:hover{
+                                    animation: hover .5s ;
+                                }
+                            }
+                            span:last-child{
+                                color: #fb670f;
+                                float: right;
+                            }
+                        }
+                    }
+                    .job-premise{
+                        font-size: 13px;
+                        color: #8d92a1;
+                        height: 30px;
+                        line-height: 30px;
+                    }
+                    .job-tag{
+                        margin-top: 5px;
+                        font-size: 13px;
+                        > div{
+                            display: inline-block;
+                            padding: 0 5px;
+                            height: 25px;
+                            line-height: 25px;
+                            color: #999;
+                            border: 1px solid #f0f0f0;
+                            border-radius: 3px;
+                            &+ div{
+                                margin-left: 16px;
+                            }
+                        }
+                    }
+                    .company{
+                        margin-top: 18px;
+                        padding-top: 18px;
+                        border-top: 1px dashed #e0e0e0;
+                        .el-link{
+                            float: left;
+                            margin-top: -2px;
+                        }
+                        .company-box{
+                            font-size: 13px;
+                            margin-left: 50px;
+                            height: 40px;
+                            line-height: 20px;
+                            color: #61687c;
+                            div + div{
+                                color: #8d92a1;
+                                display: inline-block;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .hot-company{
+        h2{
+            margin-bottom: 40px;
+        }
+        ul{
+            display: grid;
+            grid-template-columns: repeat(4, calc((100% - 48px) / 4));
+            gap: 16px 16px;
+            li{
+                .sub-li{
+                    overflow: hidden;
+                    .company-introduction{
+                        margin: 0 13px;
+                        padding: 20px 0 14px;
+                        text-align: center;
+                        border-bottom: 1px dashed #e0e0e0;
+                        p{
+                            margin-bottom: 14px;
+                        }
+                        h3{
+                            margin-top: 14px;
+                            font-size: 15px;
+                            font-weight: 500;
+                        }
+                        h4{
+                            margin-top: 3px;
+                            font-size: 13px;
+                            font-weight: 400;
+                            color: #999;
+                            & + h4 {
+                                color: #414a60;
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                                white-space: nowrap;
+                            }
+                        }
+                    }
+                    .company-recruit{
+                        margin-top: 20px;
+                        margin-bottom: 14px;
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        .el-link{
+                            display: block;
+                            text-align: center;
+                            margin-left: 0;
+                            font-size: 13px;
+                            color: #5dd5c8;
+                            &:nth-child(2){
+                                border-left: 1px solid #dcdfe6;
+                                border-right: 1px solid #dcdfe6;
+                            }
+                            /deep/ .el-link--inner{
+                                height: 30px;
+                                line-height: 18px;
+                            }
+                            p:last-child{
+                                font-size: 11px;
+                                color: #999;
+                                .el-link-active();
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+        .show-more{
+            display: block;
+            width: 387px;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            margin: 16px auto 0;
+            border: 1px solid @mainColor;
+            color: @mainColor;
+            transition: .3s;
+            &:hover{
+                color: #fff;
+                background: @mainColor;
+            }
+            &:active{
+                background: #00c2b3;
+            }
+        }
+    }
+}
+footer{
+    margin-top: 100px;
+    height: 300px;
+    background: #fff;
+    .wrapper{
+        .tmargin();
+        padding: 30px 0;
+        display: flex;
+        .inner-wrapper{
+            display: inline-flex;
+        }
+        .user-feedback{
+            display: inline-flex;
+            flex-direction: column;
+            text-align: center;
+            padding-right: 60px;
+            border-right: 1px solid #dcdfe6;
+            p{
+                font-size: 15px;
+                font-weight: 600;
+            }
+        }
+        div + div{
+            white-space: nowrap;
+            h3{
+                height: 50px;
+                line-height: 50px;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            > div{
+                * {
+                    font-size: 12px;
+                    margin: 10px 0 0 0;
+                }
+                color: #8d92a1;
+                .el-link{
+                    display: block;
+                    color: inherit;
+                    .el-link-active();
                 }
             }
         }

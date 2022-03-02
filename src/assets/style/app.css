@@ -6,6 +6,7 @@
 }
 body{
     font-size: 14px;
+    color: #414a60;
 }
 /* ul */
 ul{
@@ -67,7 +68,10 @@ ul{
     transition: color .5s;
 }
 .el-link.el-link--default:hover{
-    color: #00d7c6;
+    color: #5dd5c8;
+}
+.el-link.el-link--default:active{
+    color: #00c2b3;
 }
 .el-link::after{
     display: none;

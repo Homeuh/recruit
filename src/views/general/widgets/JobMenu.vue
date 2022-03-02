@@ -139,6 +139,9 @@ export default {
                         &:hover {
                             color: #5dd5c8;
                         }
+                        &:active{
+                            color: #00c2b3;
+                        }
                     }
                 }
             }
