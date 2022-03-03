@@ -1,0 +1,306 @@
+.el-link-active {
+  transition: 0.3s;
+}
+.el-link-active:hover {
+  color: #5dd5c8;
+}
+.el-link-active:active {
+  color: #00c2b3;
+}
+main .search-form {
+  width: 80%;
+  padding-top: 20px;
+}
+main .search-form .search-input /deep/ .el-input__inner {
+  height: 48px;
+  line-height: 48px;
+  font-size: 16px;
+}
+main .search-form .search-input /deep/ .el-input-group__append {
+  background: #5dd5c8;
+  color: #ffffff;
+  text-align: center;
+  padding: 0 50px;
+  font-size: 24px;
+  cursor: pointer;
+}
+main .search-form .search-input /deep/ .el-input-group__append:hover {
+  opacity: 0.9;
+}
+main .search-form .search-hot {
+  padding-top: 10px;
+  padding-bottom: 40px;
+  font-size: 13px;
+  color: #9fa3b0;
+}
+main .search-form .search-hot b {
+  font-weight: 400;
+}
+main .search-form .search-hot .el-link {
+  white-space: nowrap;
+  margin-left: 15px;
+  font-weight: 400;
+  font-size: 13px;
+  color: #9fa3b0;
+  transition: 0.3s;
+}
+main .search-form .search-hot .el-link:hover {
+  color: #5dd5c8;
+}
+main .search-form .search-hot .el-link:active {
+  color: #00c2b3;
+}
+main .home-box {
+  display: flex;
+}
+main .home-box .home-sider {
+  position: relative;
+  width: 384px;
+  margin-right: 16px;
+  background: #fff;
+  box-shadow: 5px 5px 15px rgba(3, 0, 0, 0.04);
+}
+main .home-box .home-sider .job-menu {
+  position: static;
+}
+main .home-box .home-sider .show-more {
+  padding: 0 20px;
+  border-top: 1px dashed #ecedef;
+  height: 50px;
+  line-height: 50px;
+  color: #00c2b3;
+}
+main .home-box .home-banner {
+  flex: 1;
+}
+main .home-box .home-banner .el-carousel /deep/ .el-carousel__container {
+  height: 410px;
+}
+main .home-box .home-banner .el-carousel /deep/ .el-carousel__item {
+  transition: transform 0.4s step-start, opacity 0.5s ease-in-out;
+  opacity: 0.8;
+}
+main .home-box .home-banner .el-carousel /deep/ .el-carousel__item.is-active {
+  opacity: 1;
+}
+main .home-box .home-banner .el-carousel /deep/ .el-link {
+  width: 100%;
+  height: 100%;
+}
+main .home-box .home-banner .el-carousel /deep/ .el-link--inner {
+  width: 100%;
+  height: 100%;
+}
+main .common-tab-box {
+  overflow: hidden;
+}
+main .common-tab-box h2 {
+  font-size: 26px;
+  font-weight: 400;
+  margin-top: 40px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+main .common-tab-box h2::before,
+main .common-tab-box h2::after {
+  content: "";
+  display: inline-block;
+  vertical-align: 8px;
+  margin: 0 10px;
+  width: 50px;
+  height: 1px;
+  background: #d1d4db;
+}
+main .common-tab-box .sub-li {
+  background: #fff;
+}
+main .common-tab-box .sub-li:hover {
+  box-shadow: 0 0 10px 0 rgba(56, 81, 76, 0.12);
+}
+main .hot-city-job > .el-link {
+  color: #5dd5c8;
+  font-weight: 400;
+  margin-bottom: 10px;
+  width: 98%;
+  justify-content: flex-end;
+}
+main .hot-city-job > .el-link:active {
+  color: #00c2b3;
+}
+main .hot-city-job ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 20px;
+}
+main .hot-city-job ul li .sub-li {
+  padding: 20px 18px 10px;
+}
+main .hot-city-job ul li .sub-li > .el-link {
+  color: #414a60;
+  transition: 0.3s;
+  width: 100%;
+  justify-content: space-between;
+}
+main .hot-city-job ul li .sub-li > .el-link:hover {
+  color: #5dd5c8;
+}
+main .hot-city-job ul li .sub-li > .el-link:active {
+  color: #00c2b3;
+}
+main .hot-city-job ul li .sub-li > .el-link /deep/ .el-link--inner {
+  width: 100%;
+  font-size: 15px;
+}
+main .hot-city-job ul li .sub-li > .el-link /deep/ .el-link--inner span:first-child {
+  display: inline-block;
+  margin-right: 10px;
+}
+main .hot-city-job ul li .sub-li > .el-link /deep/ .el-link--inner span:nth-child(2) {
+  display: inline-block;
+  color: #00d7c6;
+}
+@keyframes hover {
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+}
+main .hot-city-job ul li .sub-li > .el-link /deep/ .el-link--inner span:nth-child(2):hover {
+  animation: hover 0.5s;
+}
+main .hot-city-job ul li .sub-li > .el-link /deep/ .el-link--inner span:last-child {
+  color: #fb670f;
+  float: right;
+}
+main .hot-city-job ul li .sub-li .job-premise {
+  font-size: 13px;
+  color: #8d92a1;
+  height: 30px;
+  line-height: 30px;
+}
+main .hot-city-job ul li .sub-li .job-tag {
+  margin-top: 5px;
+  font-size: 13px;
+}
+main .hot-city-job ul li .sub-li .job-tag > div {
+  display: inline-block;
+  padding: 0 5px;
+  height: 25px;
+  line-height: 25px;
+  color: #999;
+  border: 1px solid #f0f0f0;
+  border-radius: 3px;
+}
+main .hot-city-job ul li .sub-li .job-tag > div + div {
+  margin-left: 16px;
+}
+main .hot-city-job ul li .sub-li .company {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed #e0e0e0;
+}
+main .hot-city-job ul li .sub-li .company .el-link {
+  float: left;
+  margin-top: -2px;
+}
+main .hot-city-job ul li .sub-li .company .company-box {
+  font-size: 13px;
+  margin-left: 50px;
+  height: 40px;
+  line-height: 20px;
+  color: #61687c;
+}
+main .hot-city-job ul li .sub-li .company .company-box div + div {
+  color: #8d92a1;
+  display: inline-block;
+}
+main .hot-company h2 {
+  margin-bottom: 40px;
+}
+main .hot-company ul {
+  display: grid;
+  grid-template-columns: repeat(4, calc((100% - 48px) / 4));
+  gap: 16px 16px;
+}
+main .hot-company ul li .sub-li {
+  overflow: hidden;
+}
+main .hot-company ul li .sub-li .company-introduction {
+  margin: 0 13px;
+  padding: 20px 0 14px;
+  text-align: center;
+  border-bottom: 1px dashed #e0e0e0;
+}
+main .hot-company ul li .sub-li .company-introduction p {
+  margin-bottom: 14px;
+}
+main .hot-company ul li .sub-li .company-introduction h3 {
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 500;
+}
+main .hot-company ul li .sub-li .company-introduction h4 {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #999;
+}
+main .hot-company ul li .sub-li .company-introduction h4 + h4 {
+  color: #414a60;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+main .hot-company ul li .sub-li .company-recruit {
+  margin-top: 20px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+main .hot-company ul li .sub-li .company-recruit .el-link {
+  display: block;
+  text-align: center;
+  margin-left: 0;
+  font-size: 13px;
+  color: #5dd5c8;
+}
+main .hot-company ul li .sub-li .company-recruit .el-link:nth-child(2) {
+  border-left: 1px solid #dcdfe6;
+  border-right: 1px solid #dcdfe6;
+}
+main .hot-company ul li .sub-li .company-recruit .el-link /deep/ .el-link--inner {
+  height: 30px;
+  line-height: 18px;
+}
+main .hot-company ul li .sub-li .company-recruit .el-link p:last-child {
+  font-size: 11px;
+  color: #999;
+  transition: 0.3s;
+}
+main .hot-company ul li .sub-li .company-recruit .el-link p:last-child:hover {
+  color: #5dd5c8;
+}
+main .hot-company ul li .sub-li .company-recruit .el-link p:last-child:active {
+  color: #00c2b3;
+}
+main .hot-company .show-more {
+  display: block;
+  width: 387px;
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  margin: 16px auto 0;
+  border: 1px solid #5dd5c8;
+  color: #5dd5c8;
+  transition: 0.3s;
+}
+main .hot-company .show-more:hover {
+  color: #fff;
+  background: #5dd5c8;
+}
+main .hot-company .show-more:active {
+  background: #00c2b3;
+}
+/*# sourceMappingURL=Home.css.map */

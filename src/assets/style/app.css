@@ -7,6 +7,21 @@
 body{
     font-size: 14px;
     color: #414a60;
+    position: relative;
+}
+.container {
+    width: 100%;
+    background: #f6f6f8;
+}
+::selection{
+    background: #5dd5c8;
+}
+/* 外边距 */
+.margin-10per{
+    margin: 0 10%
+}
+.margin-20per{
+    margin: 0 20%
 }
 /* ul */
 ul{

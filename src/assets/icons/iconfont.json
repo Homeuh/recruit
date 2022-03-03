@@ -1,0 +1,16 @@
+{
+  "id": "3219654",
+  "name": "recruit",
+  "font_family": "element-icons",
+  "css_prefix_text": "el-icon-",
+  "description": "招聘网站",
+  "glyphs": [
+    {
+      "icon_id": "1079372",
+      "name": "招聘",
+      "font_class": "zhaopin",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    }
+  ]
+}
