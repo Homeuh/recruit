@@ -10,7 +10,7 @@
           </el-link>
         </div>
         <!-- 坐标城市 -->
-        <div class="nav-city">
+        <div class="nav-city" @click="dialogVisible = true">
           <p class="nav-city-box">
             <i class="el-icon-location-outline"></i>
             <span class="nav-city-selected">深圳</span>
@@ -19,8 +19,8 @@
         </div>
         <!-- 用户导航 -->
         <div class="nav">
-          <el-link href="/home">首页</el-link>
-          <el-link href="/profession">职位</el-link>
+          <el-link href="/home" :class="{'active-route': activeRoute('/home')}">首页</el-link>
+          <el-link href="/profession" :class="{'active-route': activeRoute('/profession')}">职位</el-link>
         </div>
         <!-- 用户操作 -->
         <div class="user-nav">
@@ -31,17 +31,26 @@
         </div>
       </nav>
     </div>
+    <CityDialog :visible.sync="dialogVisible"/>
   </header>
 </template>
 
 <script>
-    export default {
-        name: "GeneralTopBar",
-        data() {
-            return {
-            }
+import CityDialog from "@/components/CityDialog";
+export default {
+    name: "GeneralTopBar",
+    components: {CityDialog},
+    data() {
+        return {
+            dialogVisible: false
+        }
+    },
+    methods: {
+        activeRoute(path) {
+            return this.$route.path === path
         }
     }
+}
 </script>
 
 <style lang="less" scoped>
@@ -97,6 +106,9 @@ header {
                 &.nav {
                     .el-link {
                         margin-left: 30px;
+                        &.active-route{
+                            color: @navColor;
+                        }
                     }
                 };
                 &.user-nav {

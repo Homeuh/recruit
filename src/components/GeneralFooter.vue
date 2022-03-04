@@ -56,7 +56,6 @@
             footerMargin() {
                 const wrapper = document.querySelector(".wrapper");
                 const wrapper_width = $(wrapper).innerWidth();
-                console.log(wrapper_width)
                 const inner_wrapper = document.querySelector(".inner-wrapper");
                 const inner_wrapper_width = $(inner_wrapper).innerWidth();
                 const footer_right = document.querySelectorAll(".inner-wrapper div + div")

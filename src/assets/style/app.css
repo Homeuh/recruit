@@ -14,6 +14,7 @@ body{
     background: #f6f6f8;
 }
 ::selection{
+    color: #fff;
     background: #5dd5c8;
 }
 /* 外边距 */
@@ -46,6 +47,8 @@ ul{
     border-color: #00d7c6;
     background: transparent;
 }
+
+/* 文本el-btn */
 .el-button--text{
     color: #00c2b3;
 }
@@ -56,12 +59,29 @@ ul{
 .el-button--text:active{
     color: #1abc9c;
 }
+
+/* 主要el-btn */
 .el-button--primary{
+    height: 32px;
+    line-height: 32px;
+    padding: 0 15px;
+}
+.el-button--primary,
+.el-button--primary:hover,
+.el-button--primary:focus{
     color: #ffffff;
     border-color: #5dd5c8;
     background: #5dd5c8;
 }
+.el-button--primary:hover,
+.el-button--primary:focus{
+    opacity: .8;
+}
+.el-button--primary:active{
+    background: #00c2b3;
+}
 
+/* 圆角el-btn*/
 .el-button--default.is-round:hover,
 .el-button--default.is-round:focus{
     color: #00d7c6;

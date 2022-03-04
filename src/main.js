@@ -11,6 +11,7 @@ import {
     Button,
     Carousel,
     CarouselItem,
+    Dialog,
     Divider,
     Link,
     Menu,
@@ -23,6 +24,7 @@ import {
 Vue.use(Button)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+Vue.use(Dialog)
 Vue.use(Divider)
 Vue.use(Link)
 Vue.use(Menu)

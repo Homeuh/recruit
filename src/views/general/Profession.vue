@@ -13,12 +13,24 @@
             </div>
             <!-- 工作城市选择 -->
             <div class="condition-box">
-              <dl>
+              <dl class="condition-city">
                 <dd>
-                  <span class="default-condition">全国</span>
+                  <span class="city">{{ conditionCity }}</span>
+                  <i v-if="conditionCity !== '全国'" class="el-icon-arrow-right"></i>
+                  <span v-if="conditionCity !== '全国'" class="city-district">{{ conditionDistrict }}</span>
                   <span class="hot-city">热门城市：</span>
-                  <el-link v-for="city in hotCity" :key="city">{{ city }}</el-link>
-                  <el-button type="text" class="select-city">筛选城市</el-button>
+                  <el-link v-for="city in hotCity" :key="city" @click="citySelect(city)">{{ city }}</el-link>
+                  <el-button type="text" class="select-city" @click="dialogVisible = true">全部城市</el-button>
+                </dd>
+              </dl>
+              <dl class="condition-district" v-if="conditionCity !== '全国'">
+                <dd>
+                  <el-link v-for="district in districtList"
+                           :key="district"
+                           :class="{'is-select': conditionDistrict === district}"
+                           @click="conditionDistrict = district"
+                  >{{ district }}
+                  </el-link>
                 </dd>
               </dl>
             </div>
@@ -35,6 +47,27 @@
         </div>
         <!-- 职位信息 -->
         <div class="job-box margin-20per">
+          <!-- 右侧侧栏 -->
+          <aside>
+            <!-- 登录盒子 -->
+            <div class="login-box">
+              <el-button type="primary">已有账号，立即登录</el-button>
+            </div>
+            <!-- 浏览职位记录 -->
+            <div class="history-job">
+              <div class="history-job-label">浏览过的职位</div>
+              <ul>
+                <li v-for="(histJob,histJobIndex) in historyJobList" :key="histJob.name + histJobIndex">
+                  <el-link>
+                    <span :title="histJob.name">{{ histJob.name }}</span>
+                    <span>{{ histJob.salary }}</span>
+                    <span>{{ histJob.companyName }}</span>
+                  </el-link>
+                </li>
+              </ul>
+            </div>
+          </aside>
+          <!-- 职位列表 -->
           <div class="job-list">
             <ul>
               <li v-for="(job, jobIndex) in jobList" :key="job.name + jobIndex">
@@ -105,6 +138,8 @@
         </div>
       </main>
       <GeneralFooter />
+      <!--  城市选择框  -->
+      <CityDialog :visible.sync="dialogVisible" />
     </div>
 </template>
 
@@ -112,15 +147,51 @@
 import GeneralTopBar from "../../components/GeneralTopBar";
 import GeneralFooter from "../../components/GeneralFooter";
 import SelectWrapper from "../../components/SelectWrapper.vue";
+import CityDialog from "../../components/CityDialog.vue";
+import * as Constant from "@/common/constants";
 export default {
     name: "Profession",
     components: {
-        GeneralTopBar, GeneralFooter, SelectWrapper
+        GeneralTopBar, GeneralFooter, SelectWrapper, CityDialog
     },
     data() {
         return {
             searchKey: "",
+            conditionCity: Constant.CONDITION_CITY,
+            conditionDistrict: Constant.CONDITION_DISTRICT,
             hotCity: ["全国","北京","上海","广州","深圳","杭州","西安","厦门","长沙","武汉","天津","成都","重庆","苏州"],
+            cityList: [
+                {
+                    city: "全国"
+                },
+                {
+                    city: "北京",
+                    district: [
+                        "不限", "朝阳区","海淀区","大兴区","丰台区","昌平区","东城区","西城区","通州区",
+                        "顺义区","石景山区","房山区","门头沟区","怀柔区","密云区","平台区","延庆区"
+                    ]
+                },
+                {
+                    city: "上海",
+                    district: [
+                        "不限", "浦东新区","闵行区","徐汇区","静安区","杨浦区","嘉定区","普陀区","长宁区",
+                        "松江区","黄浦区","宝山区","青浦区","虹口区","奉贤区","金山区","崇明区"
+                    ]
+                },
+                {
+                    city: "广州",
+                    district: [
+                        "不限", "天河区","白云区","番禺区","海珠区","黄埔区","越秀区","花都区","荔湾区",
+                        "增城区","南山区","从化区"
+                    ]
+                },
+                {
+                    city: "深圳",
+                    district: [
+                        "南山区","宝安区","龙岗区","福田区","龙华区","罗湖区","光明区","坪山区","盐田区"
+                    ]
+                }
+            ],
             filterConditions: [
                 {
                     label: "工作经验", options: ["不限","在校生/应届生","1年以内","1-3年","3-5年","5-10年","10年以上"]
@@ -188,7 +259,7 @@ export default {
                 },
                 {
                     name: "中高级前端开发工程师", address: "深圳·南山",
-                    salary: "8-15K",experience: "经验不限",
+                    salary: "25-40K",experience: "经验不限",
                     qualification: "本科", interviewer: "曾女士",
                     interviewerDuty: "人事主管", companyName: "美团",
                     companyTag: "消费生活", companySize: "2000人以上",
@@ -257,11 +328,44 @@ export default {
                     companyBenefit: "朝阳行业，多元文化，特色福利"
                 },
             ],
+            historyJobList: [
+                {
+                    name: "前端工程师", salary: "10-15K", companyName: "迅雷网络"
+                },
+                {
+                    name: "Web前端开发工程师", salary: "10-20K·13薪", companyName: "KLOOK 客路旅行"
+                },
+                {
+                    name: "前端开发工程师", salary: "12-20K", companyName: "微基因 WeGene"
+                },
+                {
+                    name: "前端开发工程师", salary: "15-25K·14薪", companyName: "瑰琦科技"
+                },
+                {
+                    name: "中高级前端开发工程师", salary: "25-40K", companyName: "美团"
+                },
+                {
+                    name: "web前端开发工程师", salary: "8-14K", companyName: "果酱时代"
+                },
+            ],
             currentPage: 1,
             total: 1000,
+            dialogVisible: false
+        }
+    },
+    computed: {
+        districtList() {
+            // 匹配不到选定城市 返回空数组
+            const cityMatch = this.cityList.filter(item => item.city === this.conditionCity)
+            // console.log(cityMatch.length)
+            return cityMatch.length ? cityMatch[0].district : []
         }
     },
     methods: {
+        citySelect(city) {
+            this.conditionCity = city;
+            this.conditionDistrict = Constant.CONDITION_DISTRICT;
+        },
         handleCurrentChange(value) {
             console.log(value)
         }
@@ -293,6 +397,79 @@ export default {
 @fontColor: #61687c;
 main{
     overflow: hidden;
+    aside{
+        float: right;
+        div + div{
+            margin-top: 16px;
+        }
+        .history-job{
+            width: 280px;
+            background: #fff;
+            .history-job-label{
+                padding-left: 30px;
+                color: @mainColor;
+                height: 48px;
+                line-height: 48px;
+                box-sizing: content-box;
+                border-bottom: 2px solid #f2f2f5;
+            }
+            .el-link{
+                margin: 0 30px;
+                padding: 8px 0 2px 0;
+                border-bottom: 1px solid #ecedef;
+                display: block;
+                &:hover{
+                    /deep/ .el-link--inner{
+                        span:first-child{
+                            color: @mainColor;
+                        }
+                    }
+                }
+                &:active{
+                    /deep/ .el-link--inner{
+                        span:first-child{
+                            transition: color .3s;
+                            color: @activeColor;
+                        }
+                    }
+                }
+                /deep/ .el-link--inner{
+                    span{
+                        width: 60%;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        height: 26px;
+                        line-height: 26px;
+                        display: inline-block;
+                        &:first-child{
+                            transition: color .3s;
+                            color: @fontColor;
+                        }
+                        &:nth-child(2){
+                            width: fit-content;
+                            float: right;
+                            color: #fb670f;
+                        }
+                        &:last-child{
+                            height: 22px;
+                            line-height: 22px;
+                            margin-bottom: 6px;
+                            color: #8d92a1;
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+        .login-box{
+            background: #fff;
+            padding: 20px 30px;
+            .el-button{
+                width: 100%;
+            }
+        }
+    }
     .filter-box{
         background: #ffffff;
         box-shadow: 0 3px 6px rgba(6,0,1,.05);
@@ -338,23 +515,31 @@ main{
             }
             .condition-box{
                 margin-top: 10px;
-                height: 40px;
-                line-height: 40px;
-                border-bottom: 1px solid #eef0f5;
-                font-size: 13px;
                 dl{
+                    height: 40px;
+                    line-height: 40px;
+                    font-size: 13px;
+                    border-bottom: 1px solid #eef0f5;
                     dd{
-                        span:first-child{
+                        span:not(:last-of-type){
                             color: #999;
-                            margin-right: 40px;
+                        }
+                        .el-icon-arrow-right{
+                            margin: 0 10px;
+                        }
+                        .hot-city{
+                            margin-left: 40px;
+                            margin-right: 15px;
                         }
                         .el-link{
                             font-size: 13px;
-                            margin-left: 15px;
                             color: #414a60;
                             .el-link-active();
                             & + .el-link{
                                 margin-left: 20px;
+                            }
+                            &.is-select{
+                                color: #16a085;
                             }
                         }
                         .select-city{
