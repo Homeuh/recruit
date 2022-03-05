@@ -100,7 +100,7 @@ main {
             font-size: 26px;
             font-weight: 400;
             margin-top: 40px;
-            margin-bottom: 24px;
+            margin-bottom: 40px;
             text-align: center;
             &::before, &::after{
                 content: "";
@@ -118,18 +118,26 @@ main {
                 box-shadow: 0 0 10px 0 rgba(56,81,76,.12);
             }
         }
-    }
-    .hot-city-job{
-        > .el-link{
+        .show-more{
+            display: block;
+            width: 387px;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            margin: 16px auto 0;
+            border: 1px solid @mainColor;
             color: @mainColor;
-            font-weight: 400;
-            margin-bottom: 10px;
-            width: 98%;
-            justify-content: flex-end;
+            transition: .3s;
+            &:hover{
+                color: #fff;
+                background: @mainColor;
+            }
             &:active{
-                color: @activeColor;
+                background: #00c2b3;
             }
         }
+    }
+    .hot-city-job{
         ul{
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -217,9 +225,6 @@ main {
         }
     }
     .hot-company{
-        h2{
-            margin-bottom: 40px;
-        }
         ul{
             display: grid;
             grid-template-columns: repeat(4, calc((100% - 48px) / 4));
@@ -281,24 +286,6 @@ main {
                         }
                     }
                 }
-            }
-        }
-        .show-more{
-            display: block;
-            width: 387px;
-            height: 42px;
-            line-height: 42px;
-            text-align: center;
-            margin: 16px auto 0;
-            border: 1px solid @mainColor;
-            color: @mainColor;
-            transition: .3s;
-            &:hover{
-                color: #fff;
-                background: @mainColor;
-            }
-            &:active{
-                background: #00c2b3;
             }
         }
     }

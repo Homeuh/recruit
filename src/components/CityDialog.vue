@@ -1,5 +1,10 @@
+<!--
+    城市选择组件，el-dialog形式
+    传递参数：①visible是否可见，支持.sync修饰符
+            ②currentCity当前定位城市，支持.sync修饰符
+-->
 <template>
-  <el-dialog :visible="visible" @update:visible="$emit('update:visible', $event);" class="city-list-wrapper">
+  <el-dialog :visible="visible" @update:visible="visibleSync" class="city-list-wrapper">
     <div slot="title" class="city-list-title">
       <span class="title">城市选择</span>
       <span class="sub-title">切换城市，寻找心仪的工作</span>
@@ -29,7 +34,8 @@
         <div class="city-display">
           <dl>
             <dd>
-              <el-link v-for="city in cityList" :key="city" :title="city"
+              <el-link v-for="city in cityList" :key="city"
+                       :title="city" @click="citySelect(city)"
               >{{ city }}
               </el-link>
             </dd>
@@ -138,6 +144,13 @@ export default {
         }
     },
     methods: {
+        visibleSync(event) {
+            this.$emit('update:visible', event);
+        },
+        citySelect(city) {
+            this.$emit('update:currentCity', city);
+            this.$emit('update:visible', false);
+        }
     }
 }
 </script>

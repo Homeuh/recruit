@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- 顶部导航栏、搜索框 -->
-    <GeneralTopBar />
+    <GeneralTopBar/>
     <main class="margin-20per">
       <!-- 搜索框 -->
       <div class="search-form margin-10per">
@@ -37,7 +37,6 @@
       <!-- 热门职位 -->
       <div class="common-tab-box hot-city-job">
         <h2 class="box-title">热门职位</h2>
-        <el-link class="job-link">更多热门职位</el-link>
         <ul>
           <li v-for="(job,index) in hotJob" :key="job.name + index">
             <div class="sub-li">
@@ -68,6 +67,7 @@
             </div>
           </li>
         </ul>
+        <el-link class="show-more">更多职位</el-link>
       </div>
       <!-- 热门企业 -->
       <div class="common-tab-box hot-company">
@@ -102,7 +102,7 @@
             </div>
           </li>
         </ul>
-        <el-link class="show-more">查看更多</el-link>
+        <el-link class="show-more">更多企业</el-link>
       </div>
     </main>
     <GeneralFooter />

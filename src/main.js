@@ -13,6 +13,8 @@ import {
     CarouselItem,
     Dialog,
     Divider,
+    Form,
+    FormItem,
     Link,
     Menu,
     MenuItem,
@@ -26,6 +28,8 @@ Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Dialog)
 Vue.use(Divider)
+Vue.use(Form)
+Vue.use(FormItem)
 Vue.use(Link)
 Vue.use(Menu)
 Vue.use(MenuItem)

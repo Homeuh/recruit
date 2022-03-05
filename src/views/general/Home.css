@@ -98,7 +98,7 @@ main .common-tab-box h2 {
   font-size: 26px;
   font-weight: 400;
   margin-top: 40px;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
   text-align: center;
 }
 main .common-tab-box h2::before,
@@ -117,15 +117,23 @@ main .common-tab-box .sub-li {
 main .common-tab-box .sub-li:hover {
   box-shadow: 0 0 10px 0 rgba(56, 81, 76, 0.12);
 }
-main .hot-city-job > .el-link {
+main .common-tab-box .show-more {
+  display: block;
+  width: 387px;
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  margin: 16px auto 0;
+  border: 1px solid #5dd5c8;
   color: #5dd5c8;
-  font-weight: 400;
-  margin-bottom: 10px;
-  width: 98%;
-  justify-content: flex-end;
+  transition: 0.3s;
 }
-main .hot-city-job > .el-link:active {
-  color: #00c2b3;
+main .common-tab-box .show-more:hover {
+  color: #fff;
+  background: #5dd5c8;
+}
+main .common-tab-box .show-more:active {
+  background: #00c2b3;
 }
 main .hot-city-job ul {
   display: grid;
@@ -216,9 +224,6 @@ main .hot-city-job ul li .sub-li .company .company-box div + div {
   color: #8d92a1;
   display: inline-block;
 }
-main .hot-company h2 {
-  margin-bottom: 40px;
-}
 main .hot-company ul {
   display: grid;
   grid-template-columns: repeat(4, calc((100% - 48px) / 4));
@@ -284,23 +289,5 @@ main .hot-company ul li .sub-li .company-recruit .el-link p:last-child:hover {
 }
 main .hot-company ul li .sub-li .company-recruit .el-link p:last-child:active {
   color: #00c2b3;
-}
-main .hot-company .show-more {
-  display: block;
-  width: 387px;
-  height: 42px;
-  line-height: 42px;
-  text-align: center;
-  margin: 16px auto 0;
-  border: 1px solid #5dd5c8;
-  color: #5dd5c8;
-  transition: 0.3s;
-}
-main .hot-company .show-more:hover {
-  color: #fff;
-  background: #5dd5c8;
-}
-main .hot-company .show-more:active {
-  background: #00c2b3;
 }
 /*# sourceMappingURL=Home.css.map */

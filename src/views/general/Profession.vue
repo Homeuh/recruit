@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <GeneralTopBar />
+      <GeneralTopBar :showPosition="false"/>
       <main>
         <!-- 筛选条件盒子 -->
         <div class="filter-box">
@@ -51,7 +51,7 @@
           <aside>
             <!-- 登录盒子 -->
             <div class="login-box">
-              <el-button type="primary">已有账号，立即登录</el-button>
+              <el-button type="primary" @click="activeLogin(login)">已有账号，立即登录</el-button>
             </div>
             <!-- 浏览职位记录 -->
             <div class="history-job">
@@ -139,7 +139,7 @@
       </main>
       <GeneralFooter />
       <!--  城市选择框  -->
-      <CityDialog :visible.sync="dialogVisible" />
+      <CityDialog :visible.sync="dialogVisible" :currentCity.sync="conditionCity"/>
     </div>
 </template>
 
@@ -159,6 +159,7 @@ export default {
             searchKey: "",
             conditionCity: Constant.CONDITION_CITY,
             conditionDistrict: Constant.CONDITION_DISTRICT,
+            login: Constant.LOGIN,
             hotCity: ["全国","北京","上海","广州","深圳","杭州","西安","厦门","长沙","武汉","天津","成都","重庆","苏州"],
             cityList: [
                 {
@@ -188,7 +189,7 @@ export default {
                 {
                     city: "深圳",
                     district: [
-                        "南山区","宝安区","龙岗区","福田区","龙华区","罗湖区","光明区","坪山区","盐田区"
+                        "不限","南山区","宝安区","龙岗区","福田区","龙华区","罗湖区","光明区","坪山区","盐田区"
                     ]
                 }
             ],
@@ -365,6 +366,10 @@ export default {
         citySelect(city) {
             this.conditionCity = city;
             this.conditionDistrict = Constant.CONDITION_DISTRICT;
+        },
+        activeLogin(param) {
+            window.localStorage.setItem("userType",param);
+            this.$router.push("/login");
         },
         handleCurrentChange(value) {
             console.log(value)

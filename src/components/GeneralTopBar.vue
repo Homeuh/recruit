@@ -10,10 +10,10 @@
           </el-link>
         </div>
         <!-- 坐标城市 -->
-        <div class="nav-city" @click="dialogVisible = true">
+        <div v-if="showPosition" class="nav-city" @click="dialogVisible = true">
           <p class="nav-city-box">
             <i class="el-icon-location-outline"></i>
-            <span class="nav-city-selected">深圳</span>
+            <span class="nav-city-selected">{{ currentCity }}</span>
             <span class="switch-city">[切换城市]</span>
           </p>
         </div>
@@ -24,30 +24,46 @@
         </div>
         <!-- 用户操作 -->
         <div class="user-nav">
-          <el-link href="/home">我要求职</el-link>
-          <el-link href="/home">我要招聘</el-link>
-          <el-button round size="mini">注册</el-button>
-          <el-button round size="mini">登录</el-button>
+          <el-link @click="activeLogin(interview)">我要求职</el-link>
+          <el-link @click="activeLogin(recruit)">我要招聘</el-link>
+          <el-button round size="mini" @click="activeLogin(interview)">注册</el-button>
+          <el-button round size="mini" @click="activeLogin(login)">登录</el-button>
         </div>
       </nav>
     </div>
-    <CityDialog :visible.sync="dialogVisible"/>
+    <CityDialog :visible.sync="dialogVisible"
+                :currentCity.sync="currentCity" />
   </header>
 </template>
 
 <script>
 import CityDialog from "@/components/CityDialog";
+import * as Constant from "@/common/constants.js";
 export default {
     name: "GeneralTopBar",
     components: {CityDialog},
+    props: {
+        showPosition: {
+            type: Boolean,
+            default: true
+        }
+    },
     data() {
         return {
-            dialogVisible: false
+            dialogVisible: false,
+            currentCity: Constant.CONDITION_CITY,
+            interview: Constant.REGISTER_TO_INTERVIEW,
+            recruit: Constant.REGISTER_TO_RECRUIT,
+            login: Constant.LOGIN,
         }
     },
     methods: {
         activeRoute(path) {
             return this.$route.path === path
+        },
+        activeLogin(param) {
+            window.localStorage.setItem("userType",param);
+            this.$router.push("/login");
         }
     }
 }

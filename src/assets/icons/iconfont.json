@@ -6,6 +6,13 @@
   "description": "招聘网站",
   "glyphs": [
     {
+      "icon_id": "1435248",
+      "name": "验证码",
+      "font_class": "yanzhengma",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
       "icon_id": "1079372",
       "name": "招聘",
       "font_class": "zhaopin",
