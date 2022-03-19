@@ -11,6 +11,12 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode:'5e283c8d1610918756130514e30e5381',
+        }
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=9de4acaf01ef8f8700fb69ff9075303b&plugin=AMap.Geocoder"></script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

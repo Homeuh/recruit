@@ -61,7 +61,7 @@ export default {
     display: inline-block;
     height: 40px;
     line-height: 40px;
-    font-size: 12px;
+    font-size: inherit;
     position: relative;
     background: #ffffff;
     cursor: pointer;
@@ -91,7 +91,7 @@ export default {
         margin-top: 2px;
         top: 100%;
         left: 0;
-        z-index: 1;
+        z-index: 2;
         ul{
             li{
                 padding: 0 15px;

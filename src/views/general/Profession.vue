@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+      <!-- 顶部导航栏 -->
       <GeneralTopBar :showPosition="false"/>
       <main>
         <!-- 筛选条件盒子 -->
@@ -93,16 +94,16 @@
                     </div>
                     <div class="company-info">
                       <div class="company-text">
-                        <div class="company-name">
+                        <el-link class="company-name" href="/company">
                           <span>{{ job.companyName }}</span>
-                        </div>
+                        </el-link>
                         <div class="company-detail">
                           <span>{{ job.companyTag }}</span>
                           <el-divider direction="vertical"></el-divider>
                           <span>{{ job.companySize }}</span>
                         </div>
                       </div>
-                      <el-link>
+                      <el-link class="company" href="/company">
                         <img :src="job.companyIcon" :alt="job.companyName"
                              style="width: 56px; height: 56px;
                                     border-radius: 9px; object-fit: cover"
@@ -137,9 +138,10 @@
           </el-pagination>
         </div>
       </main>
+      <!-- 底部信息栏 -->
       <GeneralFooter />
       <!--  城市选择框  -->
-      <CityDialog :visible.sync="dialogVisible" :currentCity.sync="conditionCity"/>
+      <CityDialog :visible.sync="dialogVisible" :currentCity="conditionCity" @update:currentCity="citySelect"/>
     </div>
 </template>
 
@@ -270,7 +272,7 @@ export default {
                 },
                 {
                     name: "前端开发工程师", address: "深圳·南山",
-                    salary: "25-40K·15K", experience: "经验不限",
+                    salary: "25-40K·15薪", experience: "经验不限",
                     qualification: "本科及以上", interviewer: "王女士",
                     interviewerDuty: "招聘专员", companyName: "字节跳动",
                     companyTag: "人工智能 | IM通讯", companySize: "5000人以上",
@@ -310,7 +312,7 @@ export default {
                 },
                 {
                     name: "中高级前端开发工程师", address: "深圳·南山",
-                    salary: "8-14K", experience: "5年以上",
+                    salary: "30-50K", experience: "5年以上",
                     qualification: "大专及以上", interviewer: "张先生",
                     interviewerDuty: "高级开发工程师", companyName: "捷顺科技股份",
                     companyTag: "生活服务，智能硬件", companySize: "2000人以上",
@@ -320,7 +322,7 @@ export default {
                 },
                 {
                     name: "web前端开发工程师", address: "深圳·宝安",
-                    salary: "8-14K", experience: "5年以上",
+                    salary: "7-10K", experience: "1年以上",
                     qualification: "大专及以上", interviewer: "黄女士",
                     interviewerDuty: "人力资源", companyName: "果酱时代",
                     companyTag: "MCN | 直播平台", companySize: "50-150人",
@@ -373,6 +375,7 @@ export default {
         },
         handleCurrentChange(value) {
             console.log(value)
+            console.log(this.$route)
         }
     }
 }
@@ -639,9 +642,6 @@ main{
                                     .company-name{
                                         font-size: 16px;
                                         color: @activeColor;
-                                        span{
-                                            cursor: pointer;
-                                        }
                                     }
                                     .company-detail{
                                         .el-divider{
@@ -649,7 +649,7 @@ main{
                                         }
                                     }
                                 }
-                                .el-link{
+                                .company{
                                     position: absolute;
                                     top: 0;
                                     right: 0;
@@ -698,9 +698,14 @@ main{
             /deep/ button, /deep/ li {
                 background: #fff;
             }
-            /deep/ li:not(.disabled).active{
-                background-color: @activeColor;
-                color: #FFF;
+            /deep/ li{
+                &:not(.disabled):hover{
+                    color: @activeColor;
+                }
+                &:not(.disabled).active{
+                    background-color: @activeColor;
+                    color: #FFF;
+                }
             }
         }
     }

@@ -6,6 +6,76 @@
   "description": "招聘网站",
   "glyphs": [
     {
+      "icon_id": "15304881",
+      "name": "招聘",
+      "font_class": "zhaopin1",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "22783722",
+      "name": "招聘",
+      "font_class": "zhaopin2",
+      "unicode": "e750",
+      "unicode_decimal": 59216
+    },
+    {
+      "icon_id": "26212952",
+      "name": "团队",
+      "font_class": "tuandui",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "7587933",
+      "name": "菜单",
+      "font_class": "caidan",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "2682950",
+      "name": "折线图",
+      "font_class": "zhexiantu",
+      "unicode": "e702",
+      "unicode_decimal": 59138
+    },
+    {
+      "icon_id": "809963",
+      "name": "点赞",
+      "font_class": "dianzan",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "866524",
+      "name": "已认证",
+      "font_class": "yirenzheng",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "77156",
+      "name": "微信",
+      "font_class": "weixin",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "3640195",
+      "name": "团队规模",
+      "font_class": "tuanduiguimo",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "8288831",
+      "name": "地球",
+      "font_class": "diqiu",
+      "unicode": "e844",
+      "unicode_decimal": 59460
+    },
+    {
       "icon_id": "1435248",
       "name": "验证码",
       "font_class": "yanzhengma",

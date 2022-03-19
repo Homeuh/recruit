@@ -1,8 +1,8 @@
 @font-face {
   font-family: "element-icons"; /* Project id 3219654 */
-  src: url('iconfont.woff2?t=1646507253293') format('woff2'),
-       url('iconfont.woff?t=1646507253293') format('woff'),
-       url('iconfont.ttf?t=1646507253293') format('truetype');
+  src: url('iconfont.woff2?t=1647683567831') format('woff2'),
+       url('iconfont.woff?t=1647683567831') format('woff'),
+       url('iconfont.ttf?t=1647683567831') format('truetype');
 }
 
 .element-icons {
@@ -11,6 +11,46 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-zhaopin1:before {
+  content: "\e63a";
+}
+
+.el-icon-zhaopin2:before {
+  content: "\e750";
+}
+
+.el-icon-tuandui:before {
+  content: "\e613";
+}
+
+.el-icon-caidan:before {
+  content: "\e60e";
+}
+
+.el-icon-zhexiantu:before {
+  content: "\e702";
+}
+
+.el-icon-dianzan:before {
+  content: "\e656";
+}
+
+.el-icon-yirenzheng:before {
+  content: "\e63e";
+}
+
+.el-icon-weixin:before {
+  content: "\e601";
+}
+
+.el-icon-tuanduiguimo:before {
+  content: "\e60f";
+}
+
+.el-icon-diqiu:before {
+  content: "\e844";
 }
 
 .el-icon-yanzhengma:before {

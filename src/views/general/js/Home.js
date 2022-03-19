@@ -1,7 +1,7 @@
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import JobMenu from "./widgets/JobMenu";
-import $ from "jquery";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import JobMenu from "../widgets/JobMenu";
+// import $ from "jquery";
 
 const components = {
     GeneralTopBar,
@@ -385,7 +385,7 @@ const methods = {
         const subHeight = [];
         subJobMenu.forEach(item => {
             // jq返回内容高度
-            const innerHeight = $(item).innerHeight();
+            const innerHeight = this.$(item).innerHeight();
             subHeight.push(innerHeight);
         });
         const dls = document.querySelectorAll(".home-sider dl");

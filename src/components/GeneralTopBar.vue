@@ -6,7 +6,7 @@
         <!-- 顶部logo -->
         <div class="logo">
           <el-link href="/home">
-            万家优<i class="el-icon-zhaopin"></i>
+            万家优<i class="el-icon-zhaopin2"></i>
           </el-link>
         </div>
         <!-- 坐标城市 -->
@@ -59,7 +59,8 @@ export default {
     },
     methods: {
         activeRoute(path) {
-            return this.$route.path === path
+            const reg = new RegExp(path, "i");
+            return reg.test(this.$route.path);
         },
         activeLogin(param) {
             window.localStorage.setItem("userType",param);
@@ -95,9 +96,9 @@ header {
                         font-weight: 600;
                         color: @navColor;
                     }
-                    /deep/ .el-icon-zhaopin{
-                        font-size: 28px;
-                        transform: translateY(3.5px) translateX(-2px);
+                    /deep/ i{
+                        font-size: 32px;
+                        transform: translateY(4px) translateX(-2px);
                     }
                 };
                 &.nav-city {

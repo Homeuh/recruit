@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <!-- 顶部导航栏、搜索框 -->
+    <!-- 顶部导航栏 -->
     <GeneralTopBar/>
     <main class="margin-20per">
       <!-- 搜索框 -->
@@ -40,7 +40,7 @@
         <ul>
           <li v-for="(job,index) in hotJob" :key="job.name + index">
             <div class="sub-li">
-              <el-link class="job-link">
+              <el-link class="job-link" href="/profession/detail">
                 <span>{{ job.name }}</span>
                 <span><i class="el-icon-chat-dot-round"></i></span>
                 <span>{{ job.salary }}</span>
@@ -54,7 +54,7 @@
                 <div v-for="item in job.tag" :key="item">{{ item }}</div>
               </div>
               <div class="company">
-                <el-link><img :src="job.companyIcon" alt="job.companyName" style="width: 40px; height: 40px; object-fit: cover"></el-link>
+                <el-link href="/company"><img :src="job.companyIcon" alt="job.companyName" style="width: 40px; height: 40px; object-fit: cover"></el-link>
                 <div class="company-box">
                   <div>{{ job.companyName }}</div>
                   <div>{{ job.companyTag }}</div>
@@ -76,7 +76,7 @@
           <li v-for="(company,index) in hotCompany" :key="company.name + index">
             <div class="sub-li">
               <div class="company-introduction">
-                <p><el-link><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
+                <p><el-link href="/company"><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
                 <h3>{{ company.name }}</h3>
                 <h4>
                   {{ company.tag }}
@@ -96,7 +96,7 @@
                 </el-link>
                 <el-link class="job-link">
                   <p>{{ company.activity }}%</p>
-                  <p>面试处理率</p>
+                  <p>简历处理率</p>
                 </el-link>
               </div>
             </div>
@@ -105,11 +105,12 @@
         <el-link class="show-more">更多企业</el-link>
       </div>
     </main>
+    <!-- 底部信息栏 -->
     <GeneralFooter />
   </div>
 </template>
 
-<script src="./Home.js" />
+<script src="./js/Home.js" />
 
-<style src="./Home.css" scoped>
+<style src="./css/Home.css" scoped>
 </style>
