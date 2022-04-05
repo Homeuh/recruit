@@ -51,7 +51,7 @@
           <!-- 右侧侧栏 -->
           <aside>
             <!-- 登录盒子 -->
-            <div class="login-box">
+            <div class="login-box" v-if="!$store.state.token">
               <el-button type="primary" @click="activeLogin(login)">已有账号，立即登录</el-button>
             </div>
             <!-- 浏览职位记录 -->
@@ -74,7 +74,7 @@
               <li v-for="(job, jobIndex) in jobList" :key="job.name + jobIndex">
                 <div class="job-wrapper">
                   <div class="info-primary">
-                    <div class="job-info">
+                    <el-link href="/profession/detail" class="job-info">
                       <div class="job-title">
                         <span>{{ job.name }}</span>
                         <span>[{{ job.address }}]</span>
@@ -91,10 +91,10 @@
                           <span>{{ job.interviewerDuty }}</span>
                         </div>
                       </div>
-                    </div>
+                    </el-link>
                     <div class="company-info">
                       <div class="company-text">
-                        <el-link class="company-name" href="/company">
+                        <el-link class="company-name" href="/company/detail">
                           <span>{{ job.companyName }}</span>
                         </el-link>
                         <div class="company-detail">
@@ -103,7 +103,7 @@
                           <span>{{ job.companySize }}</span>
                         </div>
                       </div>
-                      <el-link class="company" href="/company">
+                      <el-link class="company" href="/company/detail">
                         <img :src="job.companyIcon" :alt="job.companyName"
                              style="width: 56px; height: 56px;
                                     border-radius: 9px; object-fit: cover"
@@ -131,7 +131,7 @@
           <el-pagination
                 @current-change="handleCurrentChange"
                 :current-page.sync="currentPage"
-                :page-size="100"
+                :page-size="pageSize"
                 background
                 layout="prev, pager, next"
                 :total="total">
@@ -146,10 +146,10 @@
 </template>
 
 <script>
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import SelectWrapper from "../../components/SelectWrapper.vue";
-import CityDialog from "../../components/CityDialog.vue";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import SelectWrapper from "../../../components/SelectWrapper.vue";
+import CityDialog from "../../../components/CityDialog.vue";
 import * as Constant from "@/common/constants";
 export default {
     name: "Profession",
@@ -206,13 +206,14 @@ export default {
                     label: "薪资要求", options: ["不限","3K以下","3-5K","5-10K","10-15K","15-20K","20-30K","30-50K","50K以上"]
                 },
                 {
-                    label: "公司规模", options: ["不限","0-20人","20-99人","100-499人","500-999人","1000-9999人","10000人以上"]
+                    label: "公司规模", options: ["不限","少于15人","15-50人","50-150人","150-500人","500-2000人","2000人以上"]
                 }
             ],
-            jobList: [
+            jobList: [],
+            /*jobList: [
                 {
                     name: "前端工程师", address: "深圳·南山",
-                    salary: "10-15K", experience: "1年以内",
+                    salary: "10-15K", experience: "1年以上",
                     qualification: "本科", interviewer: "王先生",
                     interviewerDuty: "前端组长",companyName: "迅雷网络",
                     companyTag: "移动互联网", companySize: "1000-5000人",
@@ -222,7 +223,7 @@ export default {
                 },
                 {
                     name: "Web前端开发工程师", address: "深圳·福田",
-                    salary: "10-20K·13薪", experience: "1年-3年",
+                    salary: "10-20K·13薪", experience: "1-3年",
                     qualification: "本科", interviewer: "宋女士",
                     interviewerDuty: "HR",companyName: "KLOOK 客路旅行",
                     companyTag: "旅游，出行", companySize: "50-100人",
@@ -330,7 +331,7 @@ export default {
                     tag: ["Vue.js","ES6","微信小程序","桌面端","React.js"],
                     companyBenefit: "朝阳行业，多元文化，特色福利"
                 },
-            ],
+            ],*/
             historyJobList: [
                 {
                     name: "前端工程师", salary: "10-15K", companyName: "迅雷网络"
@@ -352,6 +353,7 @@ export default {
                 },
             ],
             currentPage: 1,
+            pageSize: 1,
             total: 1000,
             dialogVisible: false
         }
@@ -364,7 +366,32 @@ export default {
             return cityMatch.length ? cityMatch[0].district : []
         }
     },
+    created() {
+        this.initData();
+    },
     methods: {
+        initData() {
+            let getJobList = async () => {
+                const res = await this.$axios.request({
+                    url: "/job/page",
+                    method: "get",
+                    params: {
+                        currentPage: this.currentPage,
+                        pageSize: this.pageSize
+                    }
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.jobList.forEach(item => {
+                        item.companyIcon = require("@/image/company/" + item.companyIcon);
+                        item.tag = item.tag.split(",");
+                    });
+                    this.total = res.data.total;
+                    this.jobList = Object.assign([], [], res.data.jobList);
+                }
+            };
+            this.$axios.all([getJobList()]);
+        },
         citySelect(city) {
             this.conditionCity = city;
             this.conditionDistrict = Constant.CONDITION_DISTRICT;
@@ -374,8 +401,9 @@ export default {
             this.$router.push("/login");
         },
         handleCurrentChange(value) {
-            console.log(value)
-            console.log(this.$route)
+            // console.log(value)
+            this.currentPage = value;
+            this.initData();
         }
     }
 }
@@ -543,11 +571,8 @@ main{
                             font-size: 13px;
                             color: #414a60;
                             .el-link-active();
-                            & + .el-link{
-                                margin-left: 20px;
-                            }
                             &.is-select{
-                                color: #16a085;
+                                color: @activeColor;
                             }
                         }
                         .select-city{
@@ -596,6 +621,7 @@ main{
                             height: 90px;
                             line-height: 26px;
                             .job-info{
+                                color: @fontColor;
                                 float: left;
                                 .job-title{
                                     font-size: 16px;

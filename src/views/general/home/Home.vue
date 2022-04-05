@@ -40,7 +40,7 @@
         <ul>
           <li v-for="(job,index) in hotJob" :key="job.name + index">
             <div class="sub-li">
-              <el-link class="job-link" href="/profession/detail">
+              <el-link class="job-link" :href="'/profession/detail?job_id=' + job.job_id">
                 <span>{{ job.name }}</span>
                 <span><i class="el-icon-chat-dot-round"></i></span>
                 <span>{{ job.salary }}</span>
@@ -54,7 +54,7 @@
                 <div v-for="item in job.tag" :key="item">{{ item }}</div>
               </div>
               <div class="company">
-                <el-link href="/company"><img :src="job.companyIcon" alt="job.companyName" style="width: 40px; height: 40px; object-fit: cover"></el-link>
+                <el-link :href="'/company/detail?company_id=' + job.company_id"><img :src="job.companyIcon" :alt="job.companyName" style="width: 40px; height: 40px; object-fit: cover"></el-link>
                 <div class="company-box">
                   <div>{{ job.companyName }}</div>
                   <div>{{ job.companyTag }}</div>
@@ -67,7 +67,7 @@
             </div>
           </li>
         </ul>
-        <el-link class="show-more">更多职位</el-link>
+        <el-link class="show-more" href="/profession">更多职位</el-link>
       </div>
       <!-- 热门企业 -->
       <div class="common-tab-box hot-company">
@@ -76,7 +76,7 @@
           <li v-for="(company,index) in hotCompany" :key="company.name + index">
             <div class="sub-li">
               <div class="company-introduction">
-                <p><el-link href="/company"><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
+                <p><el-link href="/company/detail"><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
                 <h3>{{ company.name }}</h3>
                 <h4>
                   {{ company.tag }}
@@ -86,15 +86,15 @@
                 <h4 :title="company.description">{{ company.description }}</h4>
               </div>
               <div class="company-recruit">
-                <el-link class="job-link">
+                <el-link href="/company/evaluation" class="job-link">
                   <p>{{ company.userComment }}</p>
                   <p>面试评价</p>
                 </el-link>
-                <el-link class="job-link">
+                <el-link href="/company/job" class="job-link">
                   <p>{{ company.recruit }}</p>
                   <p>在招职位</p>
                 </el-link>
-                <el-link class="job-link">
+                <el-link href="/company/detail" class="job-link">
                   <p>{{ company.activity }}%</p>
                   <p>简历处理率</p>
                 </el-link>
@@ -102,7 +102,7 @@
             </div>
           </li>
         </ul>
-        <el-link class="show-more">更多企业</el-link>
+        <el-link href="/company" class="show-more">更多企业</el-link>
       </div>
     </main>
     <!-- 底部信息栏 -->

@@ -23,7 +23,7 @@ export default {
     },
     data() {
         return {
-            score: this.value,
+            score: this.value ,
         }
     },
 }

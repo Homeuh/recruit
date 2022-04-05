@@ -42,7 +42,7 @@ export default {
     data() {
         return{
             value: this.label,
-            currentOption: "",
+            currentOption: this.label,
             isHover: false,
         }
     },
@@ -66,13 +66,13 @@ export default {
     background: #ffffff;
     cursor: pointer;
     .select-label{
-        width: 100px;
         min-width: 100px;
         display: inline-block;
         i{
             height: 40px;
             line-height: 40px;
             float: right;
+            margin-left: 15px;
             color: #999;
         }
         &::after{
@@ -87,6 +87,9 @@ export default {
         }
     }
     .select-options{
+        max-height: 288px;
+        overflow: auto;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
         position: absolute;
         margin-top: 2px;
         top: 100%;
@@ -95,7 +98,8 @@ export default {
         ul{
             li{
                 padding: 0 15px;
-                width: 120px;
+                min-width: 120px;
+                white-space: nowrap;
                 box-sizing: content-box;
                 height: 32px;
                 line-height: 32px;
@@ -112,4 +116,26 @@ export default {
         }
     }
 }
+
+/*滚动条一键化*/
+::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width : 6px;  /*高宽分别对应横竖滚动条的尺寸*/
+}
+::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    &:hover{
+        background: rgba(0, 0, 0, 0.2);
+    }
+}
+::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    border-radius: 10px;
+    background   : transparent;
+}
+
 </style>

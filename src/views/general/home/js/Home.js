@@ -1,12 +1,16 @@
-import GeneralTopBar from "../../../components/GeneralTopBar";
-import GeneralFooter from "../../../components/GeneralFooter";
-import JobMenu from "../widgets/JobMenu";
+import GeneralTopBar from "../../../../components/GeneralTopBar";
+import GeneralFooter from "../../../../components/GeneralFooter";
+import JobMenu from "../../widgets/JobMenu";
 // import $ from "jquery";
 
 const components = {
     GeneralTopBar,
     GeneralFooter,
     JobMenu
+}
+
+const created = function() {
+    this.initData();
 }
 
 const mounted = function () {
@@ -276,7 +280,9 @@ const data = function () {
                 href: "", url: require("@/image/banner/banner5.jpg")
             },
         ],
-        hotJob: [
+        hotJob: [],
+        hotCompany: []
+        /*hotJob: [
             {
                 name: "前端工程师", experience: "1年以内", qualification: "本科",salary: "10-15K",
                 tag: ["JavaScript","Vue","React"], companyIcon: require("@/image/company/xunlei.jpg"),
@@ -322,8 +328,8 @@ const data = function () {
                 tag: ["JavaScript","React","TypeScript"], companyIcon: require("@/image/company/meituan.jpg"),
                 companyName: "美团", companyTag: "消费生活", companySize: "2000人以上", address: "深圳·南山"
             },
-        ],
-        hotCompany: [
+        ],*/
+        /*hotCompany: [
             {
                 icon: require("@/image/company/youxikexue.jpg"), name: "游戏科学", tag: "游戏开发", size: "50-150人",
                 description: "做全球领先的重度游戏开发商", userComment: 35, recruit: 21, activity: 100
@@ -356,11 +362,42 @@ const data = function () {
                 icon: require("@/image/company/benniao.jpg"), name: "笨鸟软件", tag: "数据服务,其他 ", size: "15-50人",
                 description: "主攻国外市场，现产品约有300万活跃用户", userComment: 5, recruit: 3, activity: 100
             }
-        ]
+        ]*/
     };
 }
 
 const methods = {
+    initData() {
+        let getHotJob = async () => {
+            const res = await this.$axios.request({
+                url: "/job/list",
+                method: "get"
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                res.data.forEach(item => {
+                    item.companyIcon = require("@/image/company/" + item.companyIcon);
+                    item.tag = item.tag.split(",");
+                });
+                this.hotJob = Object.assign([], this.hotJob, res.data);
+            }
+        };
+        let getHotCompany = async () => {
+            const res = await this.$axios.request({
+                url: "/company/list",
+                method: "get"
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                res.data.forEach(item => {
+                    item.icon = require("@/image/company/" + item.icon);
+                });
+                this.hotCompany = Object.assign([], this.hotCompany, res.data);
+            }
+        };
+        this.$axios.all([getHotJob(), getHotCompany()])
+            .then(value => value);
+    },
     // 侧栏 更多职位隐藏菜单 --- 悬浮效果
     jobMenuHover() {
         const homeSider = this.$refs.homeSider;
@@ -405,6 +442,7 @@ const methods = {
 export default {
     name: "Home",
     components: components,
+    created: created,
     mounted: mounted,
     data: data,
     methods: methods

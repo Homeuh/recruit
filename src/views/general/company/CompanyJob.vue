@@ -6,10 +6,10 @@
       <div class="company-header">
         <div class="company-box margin-20per">
           <div class="company-wrapper">
-            <img :src="company.company_logo" :alt="company.company_name"
+            <img :src="company.company_logo" :alt="company.company_full_name"
                  style="width: 164px; height: 164px;"/>
             <div class="company-primary">
-              <h1 class="company-name">{{ company.company_name}}</h1>
+              <h1 class="company-name">{{ company.company_full_name}}</h1>
               <p class="company-description">{{ company.company_description }}</p>
               <div class="company-info">
                 <div class="info-wrapper">
@@ -17,7 +17,7 @@
                   <p>招聘职位</p>
                 </div>
                 <div class="info-wrapper">
-                  <el-link>{{ company.resume_feedback }}</el-link>
+                  <el-link>{{ company.resume_feedback }}%</el-link>
                   <p>简历反馈率</p>
                 </div>
                 <div class="info-wrapper">
@@ -37,9 +37,9 @@
           </div>
         </div>
         <div class="company-tab margin-20per">
-          <el-link href="/company" :class="{'is-active': $route.path === '/company'}">公司主页</el-link>
-          <el-link href="/company/job" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
-          <el-link href="/company/evaluation" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
+          <el-link :href="'/company/detail?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/detail'}">公司主页</el-link>
+          <el-link :href="'/company/job?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
+          <el-link :href="'/company/evaluation?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
         </div>
       </div>
       <div class="company-main margin-20per">
@@ -60,7 +60,7 @@
             </p>
             <p>
               <i class="el-icon-diqiu"></i>
-              <span>{{ company.company_website }}</span>
+              <span :title="company.company_website">{{ company.company_website }}</span>
             </p>
           </div>
           <div class="company-job">
@@ -121,7 +121,7 @@
             <el-pagination
                   @current-change="handleCurrentChange"
                   :current-page.sync="currentPage"
-                  :page-size="100"
+                  :page-size="pageSize"
                   background
                   layout="prev, pager, next"
                   :total="total">
@@ -136,16 +136,18 @@
 </template>
 
 <script>
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import SelectWrapper from "../../components/SelectWrapper.vue";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import SelectWrapper from "../../../components/SelectWrapper.vue";
 import setMinHeight from "@/utils/setMinHeight";
 export default {
     name: "CompanyJob",
     components: { GeneralTopBar, GeneralFooter, SelectWrapper},
     data() {
         return {
-            company: {
+            company: {},
+            /*company: {
+                    company_full_name: "深圳市迅雷网络技术有限公司",
                     company_name: "迅雷网络",
                     company_logo: require("@/image/company/xunlei.jpg"),
                     company_description: "基于共享经济的互联网云计算平台",
@@ -156,13 +158,13 @@ export default {
                     company_website: "www.xunlei.com",
                     company_introduction: "迅雷产品迅雷X手机迅雷迅雷影音产品logo迅雷客户端移动app精彩，一下就有！迅雷介绍迅雷集团（纳斯达克：XNET）成立于2003年，是全球领先的共享计算与区块链技术创新企业，同时也是中国用户最多，历史最悠久的互联网品牌之一。迅雷旗下网心科技独创了共享计算模式，在此基础上推出的超级区块链平台迅雷链，具备全球领先的百万TPS高并发、秒级确认的领先性能，大幅提升了区块链技术的性能水准，致力于打造全球最大规模ToC区块链商业生态。迅雷面向个人用户和企业用户打造了丰富的下载加速、区块链、云计算、影音娱乐等产品及服务，为超过4亿用户创造了高效、智能、安全的互联网体验\n（手机也可找工作，投简历！关注“迅雷招聘”微信公众号，随时随地关注迅雷招聘动态，手指轻轻一点即可投递简历，使您的求职更加方便快捷！）",
                     job_total: 52,
-                    resume_feedback: "96%",
+                    resume_feedback: "96",
                     evaluation_total: 26,
                     login_date: "3天内"
-                },
+                },*/
             filterConditions: [
                 {
-                    label: "行业类型", options: ["全部","技术","产品","运营","设计","销售","咨询/翻译/法律","人事/财务/行政","市场"]
+                    label: "行业类型", options: ["全部","技术","产品","运营","设计","销售","咨询/翻译/法律","人事/财务/行政","市场","其他"]
                 },
                 {
                     label: "工作城市", options: ["全部","北京","上海","深圳","广州"]
@@ -177,7 +179,8 @@ export default {
                     label: "薪资待遇", options: ["不限","3K以下","3-5K","5-10K","10-15K","15-20K","20-30K","30-50K","50K以上"]
                 }
             ],
-            filterJob: [
+            filterJob: [],
+            /*filterJob: [
                 {
                     job_duty: "高级前端开发工程师",
                     job_salary: "25-45K·16薪",
@@ -278,8 +281,9 @@ export default {
                     recruiter_avatar: require("@/image/avatar/recruiter_wu.png"),
                     recruiter_duty: "高级招聘经理"
                 }
-            ],
-            recruit_job: [
+            ],*/
+            recruit_job: [],
+            /*recruit_job: [
                     {
                         job_duty: "高级前端开发工程师",
                         job_salary: "25-45K·16薪",
@@ -315,22 +319,63 @@ export default {
                         job_year: "5-10年",
                         education: "本科"
                     },
-                ],
+                ],*/
             currentPage: 1,
+            pageSize: 10,
             total: 1000,
         }
+    },
+    created() {
+        this.initData();
     },
     mounted() {
         // 设置页面主内容最小高度
         setMinHeight(this, this.$refs.company_job_box);
     },
     methods: {
+        initData() {
+            let getCompany = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/info/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                    this.company = Object.assign({},{},res.data.company);
+                }
+            };
+            let getFilterJob = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/pageJob/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.filterJob.forEach(item => {
+                        item.recruiter_avatar = require("@/image/avatar/" + item.recruiter_avatar);
+                    })
+                    this.filterJob = Object.assign([],[],res.data.filterJob);
+                }
+            };
+            let getRecruitJob = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/listJob/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.recruit_job = Object.assign([],[],res.data.recruit_job);
+                }
+            };
+            this.$axios.request([getCompany(),getFilterJob(),getRecruitJob()]);
+        },
         filter(data) {
             return data.split("\n");
         },
         handleCurrentChange(value) {
-            console.log(value)
-            console.log(this.$route)
+            // console.log(value)
+            this.currentPage = value;
         }
     },
 }
@@ -344,16 +389,6 @@ export default {
     }
     &:active{
         color: @activeColor;
-    }
-}
-.show-more-active{
-    color: @mainColor;
-    transition: .3s;
-    &:hover{
-        color: @activeColor;
-    }
-    &:active{
-        color: #16a085;
     }
 }
 .text-overflow{
@@ -498,8 +533,13 @@ main{
                         margin-left: 12px;
                     }
                     span{
+                        display: inline-block;
                         position: relative;
                         bottom: 2px;
+                        max-width: 210px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                     }
                 }
             }

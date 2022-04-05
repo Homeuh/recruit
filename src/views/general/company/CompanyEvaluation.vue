@@ -6,10 +6,13 @@
       <div class="company-header">
         <div class="company-box margin-20per">
           <div class="company-wrapper">
-            <img :src="company.company_logo" :alt="company.company_name"
+            <img :src="!company.company_logo
+                       ? require('@/image/illustration/company_logo.png')
+                       : company.company_logo"
+                 :alt="company.company_full_name"
                  style="width: 164px; height: 164px;"/>
             <div class="company-primary">
-              <h1 class="company-name">{{ company.company_name}}</h1>
+              <h1 class="company-name">{{ company.company_full_name}}</h1>
               <p class="company-description">{{ company.company_description }}</p>
               <div class="company-info">
                 <div class="info-wrapper">
@@ -17,7 +20,7 @@
                   <p>招聘职位</p>
                 </div>
                 <div class="info-wrapper">
-                  <el-link>{{ company.resume_feedback }}</el-link>
+                  <el-link>{{ company.resume_feedback }}%</el-link>
                   <p>简历反馈率</p>
                 </div>
                 <div class="info-wrapper">
@@ -37,13 +40,13 @@
           </div>
         </div>
         <div class="company-tab margin-20per">
-          <el-link href="/company" :class="{'is-active': $route.path === '/company'}">公司主页</el-link>
-          <el-link href="/company/job" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
-          <el-link href="/company/evaluation" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
+          <el-link :href="'/company/detail?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/detail'}">公司主页</el-link>
+          <el-link :href="'/company/job?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
+          <el-link :href="'/company/evaluation?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
         </div>
       </div>
       <div class="company-main margin-20per">
-        <aside>
+        <aside ref="aside">
           <div class="company-info">
             <h3>基本信息</h3>
             <p>
@@ -60,7 +63,7 @@
             </p>
             <p>
               <i class="el-icon-diqiu"></i>
-              <span>{{ company.company_website }}</span>
+              <span :title="company.company_website">{{ company.company_website }}</span>
             </p>
           </div>
           <div class="company-job">
@@ -81,7 +84,7 @@
             <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
           </div>
         </aside>
-        <div class="company-evaluation">
+        <div class="company-evaluation" ref="company_evaluation">
           <InterviewEvaluation :dataList="evaluation" :isCompany="true" :isEvaluation="true"/>
         </div>
       </div>
@@ -92,15 +95,18 @@
 </template>
 
 <script>
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import InterviewEvaluation from "./widgets/InterviewEvaluation.vue";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import InterviewEvaluation from "../widgets/InterviewEvaluation.vue";
+import setMinHeight from "@/utils/setMinHeight";
 export default {
     name: "CompanyEvaluation",
     components: { GeneralTopBar, GeneralFooter, InterviewEvaluation},
     data() {
         return {
-            company: {
+            company: {},
+            /*company: {
+                    company_full_name: "深圳市迅雷网络技术有限公司",
                     company_name: "迅雷网络",
                     company_logo: require("@/image/company/xunlei.jpg"),
                     company_description: "基于共享经济的互联网云计算平台",
@@ -114,7 +120,7 @@ export default {
                     resume_feedback: "96%",
                     evaluation_total: 26,
                     login_date: "3天内"
-                },
+                },*/
             evaluation: [
                     {
                         applicant_avatar: require("@/image/avatar/applicant_xie.png"),
@@ -221,7 +227,8 @@ export default {
                         create_date: "2022-3-1"
                     }
                 ],
-            recruit_job: [
+            recruit_job: [],
+            /*recruit_job: [
                     {
                         job_duty: "高级前端开发工程师",
                         job_salary: "25-45K·16薪",
@@ -257,10 +264,41 @@ export default {
                         job_year: "5-10年",
                         education: "本科"
                     },
-                ],
+                ],*/
         }
     },
+    created() {
+        this.initData();
+    },
+    mounted() {
+        // 设置页面主内容最小高度
+        setMinHeight(this, this.$refs.company_evaluation);
+    },
     methods: {
+        initData() {
+            let getCompany = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/info/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                    this.company = Object.assign({},{},res.data.company);
+                }
+            };
+            let getRecruitJob = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/listJob/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.recruit_job = Object.assign([],[],res.data.recruit_job);
+                }
+            };
+            this.$axios.request([getCompany(),getRecruitJob()]);
+        },
         filter(data) {
             return data.split("\n");
         },
@@ -276,16 +314,6 @@ export default {
     }
     &:active{
         color: @activeColor;
-    }
-}
-.show-more-active{
-    color: @mainColor;
-    transition: .3s;
-    &:hover{
-        color: @activeColor;
-    }
-    &:active{
-        color: #16a085;
     }
 }
 .text-overflow{
@@ -407,6 +435,7 @@ main{
         aside{
             width: 300px;
             float: right;
+            margin-bottom: 100px;
             padding-left: 40px;
             > div + div{
                 margin-top: 40px;
@@ -429,8 +458,13 @@ main{
                         margin-left: 12px;
                     }
                     span{
+                        display: inline-block;
                         position: relative;
                         bottom: 2px;
+                        max-width: 210px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                     }
                 }
             }

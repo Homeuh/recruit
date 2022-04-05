@@ -52,6 +52,9 @@ export default {
     mounted() {
         this.footerMargin();
     },
+    updated() {
+        this.footerMargin();
+    },
     methods: {
         // 计算footer右侧 相等的marginLeft值
         footerMargin() {

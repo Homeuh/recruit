@@ -1,8 +1,8 @@
 @font-face {
   font-family: "element-icons"; /* Project id 3219654 */
-  src: url('iconfont.woff2?t=1647683567831') format('woff2'),
-       url('iconfont.woff?t=1647683567831') format('woff'),
-       url('iconfont.ttf?t=1647683567831') format('truetype');
+  src: url('iconfont.woff2?t=1648503725594') format('woff2'),
+       url('iconfont.woff?t=1648503725594') format('woff'),
+       url('iconfont.ttf?t=1648503725594') format('truetype');
 }
 
 .element-icons {
@@ -11,6 +11,114 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-huojianxianxing:before {
+  content: "\e614";
+}
+
+.el-icon-huojian:before {
+  content: "\e615";
+}
+
+.el-icon-xiangshang:before {
+  content: "\e606";
+}
+
+.el-icon-xiangxia:before {
+  content: "\e607";
+}
+
+.el-icon-xuexiao:before {
+  content: "\e665";
+}
+
+.el-icon-school:before {
+  content: "\e6b9";
+}
+
+.el-icon-xuexiao1:before {
+  content: "\e745";
+}
+
+.el-icon-project:before {
+  content: "\e620";
+}
+
+.el-icon-project2:before {
+  content: "\e61d";
+}
+
+.el-icon-company:before {
+  content: "\e74b";
+}
+
+.el-icon-shijian:before {
+  content: "\e64d";
+}
+
+.el-icon-ruzhishijian:before {
+  content: "\e630";
+}
+
+.el-icon-jinqian:before {
+  content: "\e638";
+}
+
+.el-icon-ruzhi:before {
+  content: "\e692";
+}
+
+.el-icon-xiaoxi:before {
+  content: "\e7d2";
+}
+
+.el-icon-yuanhuan:before {
+  content: "\ec42";
+}
+
+.el-icon-fabu:before {
+  content: "\ec43";
+}
+
+.el-icon-toudi:before {
+  content: "\e7b6";
+}
+
+.el-icon-shoucang:before {
+  content: "\e617";
+}
+
+.el-icon-gerenzhongxin:before {
+  content: "\e621";
+}
+
+.el-icon-zhiwei:before {
+  content: "\e610";
+}
+
+.el-icon-jianli:before {
+  content: "\e61c";
+}
+
+.el-icon-lingdang:before {
+  content: "\e8c0";
+}
+
+.el-icon-mianshi:before {
+  content: "\e7be";
+}
+
+.el-icon-toujianli:before {
+  content: "\e612";
+}
+
+.el-icon-shezhi:before {
+  content: "\e70f";
+}
+
+.el-icon-gongzuotai:before {
+  content: "\e6d6";
 }
 
 .el-icon-zhaopin1:before {

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <!-- 顶部导航栏、搜索框 -->
+    <!-- 顶部导航栏 -->
     <GeneralTopBar :showPosition="false"/>
     <main>
       <div class="detail-header">
@@ -11,8 +11,10 @@
               <span>{{ jobData.job_salary }}</span>
             </div>
             <div class="job-request">
-              <span>{{ jobData.office_city }}</span>
-              <el-divider direction="vertical"></el-divider>
+              <template v-if="jobData.recruit_num">
+                <span>招{{ jobData.recruit_num }}人</span>
+                <el-divider direction="vertical"></el-divider>
+              </template>
               <span>{{ jobData.job_year }}</span>
               <el-divider direction="vertical"></el-divider>
               <span>{{ jobData.education }}</span>
@@ -32,13 +34,18 @@
             </div>
           </div>
         </div>
+        <div class="job-tab margin-20per">
+          <el-link href="/profession/detail" :class="{'is-active': $route.path === '/profession/detail'}">职位详情</el-link>
+          <el-link href="/profession/evaluation" :class="{'is-active': $route.path === '/profession/evaluation'}">面试评价</el-link>
+        </div>
       </div>
       <div class="detail-main margin-20per">
         <aside>
           <div class="company-name">
-            <el-link href="/company">
-              <img :src="company.company_logo" :alt="company.company_name" :title="company.company_name"
-                   style="width: 100px; height: 100px; border-radius: 50%"/>
+            <el-link href="/company/detail">
+              <img :src="!company.company_logo ? require('@/image/illustration/company_logo.png') : company.company_logo"
+                   :alt="company.company_name" :title="company.company_name"
+                   style="width: 100px; height: 100px"/>
               <h2>{{ company.company_name }}</h2>
             </el-link>
           </div>
@@ -96,7 +103,7 @@
                 <p>
                   <span>{{ jobData.recruiter_duty }}</span>
                   <el-divider direction="vertical"></el-divider>
-                  <span>{{ jobData.create_date }}</span>
+                  <span>{{ jobData.update_date }}发布</span>
                 </p>
               </div>
             </div>
@@ -115,11 +122,23 @@
               </div>
             </div>
           </div>
+          <div class="job-attached" v-if="jobData.attached_info">
+            <h3>附加信息：</h3>
+            <div class="content">
+              <p><span v-for="(att,index) in filter(jobData.attached_info)" :key="att + index">{{ att }}</span></p>
+            </div>
+          </div>
+          <div class="job-interview" v-if="jobData.interview_info">
+            <h3>面试信息：</h3>
+            <div class="content">
+              <p><span v-for="(int,index) in filter(jobData.interview_info)" :key="int + index">{{ int }}</span></p>
+            </div>
+          </div>
           <div class="office-address">
             <h3>工作地点</h3>
-              <Map :address="jobData.office_city + jobData.office_district + jobData.office_address"/>
+              <Map :address="jobData.office_address"/>
           </div>
-          <InterviewEvaluation :dataList="evaluation" :showMoreLink="true"/>
+          <InterviewEvaluation data-html2canvas-ignore="true" :dataList="evaluation" :showMoreLink="true"/>
         </div>
       </div>
     </main>
@@ -129,33 +148,47 @@
 </template>
 
 <script>
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import Map from "../../components/Map.vue";
-import InterviewEvaluation from "./widgets/InterviewEvaluation.vue";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import Map from "../../../components/Map.vue";
+import InterviewEvaluation from "../widgets/InterviewEvaluation.vue";
 export default {
     name: "ProfessionDetail",
     components: { GeneralTopBar, GeneralFooter, Map, InterviewEvaluation},
     data() {
         return {
-            jobData: {
+            jobData: [],
+            /*jobData: {
                 job_duty: "前端开发工程师",
                 job_salary: "10-15K",
+                recruit_num: 5,
                 job_year: "1年以上",
                 education: "本科",
                 job_type: "全职",
                 job_tag: ["JavaScript","Vue","React"],
-                job_benefit: "1、提供在行业中非常具有竞争力的薪水\n2、为员工提供齐全的五险一金\n3、逢年过节有过节福利（包括六一儿童节）\n4、项目奖金、绩效奖、年终奖、体检、多次旅游等\n5、不定期的员工活动\n6、一年有两次调薪机会，表现好会有升职机会",
-                job_description: "1、参与公司中小商户管理软件产品的设计与研发，打造领先的SaaS产品\n2、根据业务需求完成H5/小程序的前端交互开发\n3、持续优化SaaS产品的前端交互体验",
-                job_requirement: "1、1年及以上前端开发经验，有移动Web开发经验或者小程序开发经验\n2、有HybridApp开发经验，熟练使用Angular或Vue经验优先\n3、有大型APP的前端架构部署和实践经验优先4、有责任感，对前端技术有激情，喜欢钻研，能快速接受和掌握新技术",
-                office_city: "深圳",
-                office_district: "南山",
-                office_address: "郎山路中同方信息港e栋",
-                create_date: "三天前发布",
+                job_benefit: "1、提供在行业中非常具有竞争力的薪水\n" +
+                    "2、为员工提供齐全的五险一金\n" +
+                    "3、逢年过节有过节福利（包括六一儿童节）\n" +
+                    "4、项目奖金、绩效奖、年终奖、体检、多次旅游等\n" +
+                    "5、不定期的员工活动\n" +
+                    "6、一年有两次调薪机会，表现好会有升职机会",
+                job_description: "1、参与公司中小商户管理软件产品的设计与研发，打造领先的SaaS产品\n" +
+                    "2、根据业务需求完成H5/小程序的前端交互开发\n" +
+                    "3、持续优化SaaS产品的前端交互体验",
+                job_requirement: "1、1年及以上前端开发经验，有移动Web开发经验或者小程序开发经验\n" +
+                    "2、有HybridApp开发经验，熟练使用Angular或Vue经验优先\n" +
+                    "3、有大型APP的前端架构部署和实践经验优先4、有责任感，对前端技术有激情，喜欢钻研，能快速接受和掌握新技术",
+                attached_info: "工作时间：早9晚6，周末双休",
+                interview_info: "面试方式：到场面试 | 电话面试\n" +
+                    "面试轮数：1-2轮\n" +
+                    "时间安排：分多次完成\n" +
+                    "补充标签：可周末面试 | 可下班后面试",
+                office_address: "深圳南山区郎山路中同方信息港e栋",
+                update_date: "三天前发布",
                 recruiter_name: "王先生",
                 recruiter_avatar: require("@/image/avatar/recruiter_wang.png"),
                 recruiter_duty: "前端组长",
-            },
+            },*/
             evaluation: [
                 {
                     applicant_avatar: require("@/image/avatar/applicant_xie.png"),
@@ -194,14 +227,15 @@ export default {
                     create_date: "2022-3-12"
                 }
             ],
-            company: {
+            company: [],
+            /*company: {
                 company_name: "迅雷网络",
                 company_logo: require("@/image/company/xunlei.jpg"),
                 company_tag: "移动互联网",
                 company_type: "上市公司",
                 company_size: "1000-5000人",
                 company_website: "www.xunlei.com"
-            },
+            },*/
             similarJob: [
                 {
                     job_duty: "Web前端开发工程师",
@@ -243,7 +277,26 @@ export default {
             isApply: false
         }
     },
+    created() {
+        this.initData()
+    },
     methods: {
+        async initData() {
+            // console.log(this.$route);
+            const res = await this.$axios.request({
+                url: `/job/info/${this.$route.query.job_id}`,
+                method: "get"
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                res.data.jobData.recruiter_avatar = require("@/image/avatar/" + res.data.jobData.recruiter_avatar);
+                res.data.jobData.job_tag = res.data.jobData.job_tag.split(",");
+                this.jobData = res.data.jobData;
+                
+                res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                this.company = res.data.company;
+            }
+        },
         collect() {
             this.isCollect = !this.isCollect;
         },
@@ -286,7 +339,8 @@ export default {
 main{
     .detail-header{
         background: @background;
-        padding: 30px 0;
+        padding-top: 30px;
+        overflow: hidden;
         .job-box{
             background: #fff;
             padding: 10px 20px;
@@ -389,6 +443,30 @@ main{
                         cursor: pointer;
                     }
                 }
+            }
+        }
+        .job-tab{
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding-left: 20px;
+            .el-link{
+                width: 160px;
+                padding: 8px 0;
+                font-size: 16px;
+                &.is-active{
+                    color: #fff;
+                    background: @mainColor;
+                    &:hover,&:focus{
+                        color: #fff;
+                        background: @activeColor;
+                        opacity: .8;
+                    }
+                    &:active{
+                        opacity: 1;
+                    }
+                }
+                color: @promptColor;
+              .el-link-active();
             }
         }
     }
@@ -529,8 +607,10 @@ main{
                     }
                 }
             }
-            .job-introduce{
-                h3{
+            .job-introduce,
+            .job-attached,
+            .job-interview{
+                &.job-introduce h3{
                     margin: 0;
                 }
                 .content,h4{

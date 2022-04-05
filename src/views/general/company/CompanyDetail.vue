@@ -1,135 +1,138 @@
 <template>
-    <div class="container">
-      <!-- 顶部导航栏 -->
-      <GeneralTopBar :showPosition="false"/>
-      <main>
-        <div class="company-header">
-          <div class="company-box margin-20per">
-            <div class="company-wrapper">
-              <img :src="company.company_logo" :alt="company.company_name"
-                   style="width: 164px; height: 164px;"/>
-              <div class="company-primary">
-                <h1 class="company-name">{{ company.company_name}}</h1>
-                <p class="company-description">{{ company.company_description }}</p>
-                <div class="company-info">
-                  <div class="info-wrapper">
-                    <el-link>{{ company.job_total }}个</el-link>
-                    <p>招聘职位</p>
-                  </div>
-                  <div class="info-wrapper">
-                    <el-link>{{ company.resume_feedback }}</el-link>
-                    <p>简历反馈率</p>
-                  </div>
-                  <div class="info-wrapper">
-                    <el-link>{{ company.evaluation_total }}个</el-link>
-                    <p>面试评价</p>
-                  </div>
-                  <div class="info-wrapper">
-                    <el-link>{{ company.login_date}}</el-link>
-                    <p>企业最近登录</p>
-                  </div>
+  <div class="container">
+    <!-- 顶部导航栏 -->
+    <GeneralTopBar :showPosition="false"/>
+    <main>
+      <div class="company-header">
+        <div class="company-box margin-20per">
+          <div class="company-wrapper">
+            <img :src="!company.company_logo ? require('@/image/illustration/company_logo.png') : company.company_logo"
+                 :alt="company.company_full_name"
+                 style="width: 164px; height: 164px;"/>
+            <div class="company-primary">
+              <h1 class="company-name">{{ company.company_full_name}}</h1>
+              <p class="company-description">{{ company.company_description }}</p>
+              <div class="company-info">
+                <div class="info-wrapper">
+                  <el-link>{{ company.job_total }}个</el-link>
+                  <p>招聘职位</p>
+                </div>
+                <div class="info-wrapper">
+                  <el-link>{{ company.resume_feedback }}%</el-link>
+                  <p>简历反馈率</p>
+                </div>
+                <div class="info-wrapper">
+                  <el-link>{{ company.evaluation_total }}个</el-link>
+                  <p>面试评价</p>
+                </div>
+                <div class="info-wrapper">
+                  <el-link>{{ company.login_date}}</el-link>
+                  <p>企业最近登录</p>
                 </div>
               </div>
-              <div class="user-share">
-                <span>分享</span>
-                <span><i class="el-icon-weixin"></i></span>
-              </div>
             </div>
-          </div>
-          <div class="company-tab margin-20per">
-            <el-link href="/company" :class="{'is-active': $route.path === '/company'}">公司主页</el-link>
-            <el-link href="/company/job" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
-            <el-link href="/company/evaluation" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
+            <div class="user-share">
+              <span>分享</span>
+              <span><i class="el-icon-weixin"></i></span>
+            </div>
           </div>
         </div>
-        <div class="company-main margin-20per">
-          <aside ref="aside">
-            <div class="company-info">
-              <h3>基本信息</h3>
-              <p>
-                <i class="el-icon-caidan"></i>
-                <span>{{ company.company_tag }}</span>
-              </p>
-              <p>
-                <i class="el-icon-zhexiantu"></i>
-                <span>{{ company.company_type }}</span>
-              </p>
-              <p>
-                <i class="el-icon-tuanduiguimo"></i>
-                <span>{{ company.company_size }}</span>
-              </p>
-              <p>
-                <i class="el-icon-diqiu"></i>
-                <span>{{ company.company_website }}</span>
-              </p>
-            </div>
-            <div class="company-job">
-              <h3>在招职位</h3>
-              <ul>
-                <li v-for="(rej,index) in recruit_job" :key="rej.job_duty + index">
-                  <el-link class="job-duty" :title="rej.job_duty"> {{ rej.job_duty }}</el-link>
-                  <p class="job-salary">{{ rej.job_salary }}</p>
-                  <p class="job-request">
-                    <span>{{ rej.office_city }}</span>
-                    <el-divider direction="vertical"></el-divider>
-                    <span>{{ rej.job_year }}</span>
-                    <el-divider direction="vertical"></el-divider>
-                    <span>{{ rej.education }}</span>
-                  </p>
-                </li>
-              </ul>
-              <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
-            </div>
-          </aside>
-          <div class="company-introduce" ref="company_introduce">
-            <div class="company-introduction">
-              <h3>公司简介</h3>
-              <div class="content">
-                <p v-for="intro in filter(company.company_introduction)" :key="intro">{{ intro }}</p>
-              </div>
-            </div>
-            <div class="company-recruiter">
-              <h3>公司热门招聘官</h3>
-              <div class="content">
-                <dl>
-                  <dd v-for="(rec,index) in hotRecruiter" :key="rec.recruiter_name + index">
-                    <img :src="rec.recruiter_avatar" :alt="rec.recruiter_name"
-                         style="width: 60px; height: 60px; border-radius: 50%"/>
-                    <div class="recruiter-info">
-                      <h2>{{ rec.recruiter_name }}</h2>
-                      <p>{{ rec.recruiter_duty }}</p>
-                    </div>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-            <div class="company-address">
-              <h3>公司位置</h3>
-              <div class="content">
-                <Map :address="company.company_address" />
-              </div>
-            </div>
-            <InterviewEvaluation :dataList="evaluation" :showMoreBtn="true" :isCompany="true"/>
-          </div>
+        <div class="company-tab margin-20per">
+          <el-link :href="'/company/detail?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/detail'}">公司主页</el-link>
+          <el-link :href="'/company/job?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/job'}">在招职位</el-link>
+          <el-link :href="'/company/evaluation?company_id=' + company.company_id" :class="{'is-active': $route.path === '/company/evaluation'}">面试评价</el-link>
         </div>
-      </main>
-      <!-- 底部信息栏 -->
-      <GeneralFooter />
-    </div>
+      </div>
+      <div class="company-main margin-20per">
+        <aside ref="aside">
+          <div class="company-info">
+            <h3>基本信息</h3>
+            <p>
+              <i class="el-icon-caidan"></i>
+              <span>{{ company.company_tag }}</span>
+            </p>
+            <p>
+              <i class="el-icon-zhexiantu"></i>
+              <span>{{ company.company_type }}</span>
+            </p>
+            <p>
+              <i class="el-icon-tuanduiguimo"></i>
+              <span>{{ company.company_size }}</span>
+            </p>
+            <p>
+              <i class="el-icon-diqiu"></i>
+              <span :title="company.company_website">{{ company.company_website }}</span>
+            </p>
+          </div>
+          <div class="company-job">
+            <h3>在招职位</h3>
+            <ul>
+              <li v-for="(rej,index) in recruit_job" :key="rej.job_duty + index">
+                <el-link class="job-duty" :title="rej.job_duty"> {{ rej.job_duty }}</el-link>
+                <p class="job-salary">{{ rej.job_salary }}</p>
+                <p class="job-request">
+                  <span>{{ rej.office_city }}</span>
+                  <el-divider direction="vertical"></el-divider>
+                  <span>{{ rej.job_year }}</span>
+                  <el-divider direction="vertical"></el-divider>
+                  <span>{{ rej.education }}</span>
+                </p>
+              </li>
+            </ul>
+            <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
+          </div>
+        </aside>
+        <div class="company-introduce" ref="company_introduce">
+          <div class="company-introduction">
+            <h3>公司简介</h3>
+            <div class="content">
+              <p v-for="intro in filter(company.company_introduction)" :key="intro">{{ intro }}</p>
+            </div>
+          </div>
+          <div class="company-recruiter">
+            <h3>公司热门招聘官</h3>
+            <div class="content">
+              <dl>
+                <dd v-for="(rec,index) in hotRecruiter" :key="rec.recruiter_name + index">
+                  <img :src="rec.recruiter_avatar" :alt="rec.recruiter_name"
+                       style="width: 60px; height: 60px; border-radius: 50%"/>
+                  <div class="recruiter-info">
+                    <h2>{{ rec.recruiter_name }}</h2>
+                    <p>{{ rec.recruiter_duty }}</p>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="company-address">
+            <h3>公司位置</h3>
+            <div class="content">
+              <Map :address="company.company_address" />
+            </div>
+          </div>
+          <InterviewEvaluation :dataList="evaluation" :showMoreBtn="true" :isCompany="true"/>
+        </div>
+      </div>
+    </main>
+    <!-- 底部信息栏 -->
+    <GeneralFooter />
+  </div>
 </template>
 
 <script>
-import GeneralTopBar from "../../components/GeneralTopBar";
-import GeneralFooter from "../../components/GeneralFooter";
-import Map from "../../components/Map.vue";
-import InterviewEvaluation from "./widgets/InterviewEvaluation.vue";
+import GeneralTopBar from "../../../components/GeneralTopBar";
+import GeneralFooter from "../../../components/GeneralFooter";
+import Map from "../../../components/Map.vue";
+import InterviewEvaluation from "../widgets/InterviewEvaluation.vue";
 import setMinHeight from "@/utils/setMinHeight";
 export default {
-    name: "Company",
+    name: "CompanyDetail",
     components: { GeneralTopBar, GeneralFooter, Map, InterviewEvaluation},
     data() {
         return {
-            company: {
+            company: {},
+            /*company: {
+                company_full_name: "深圳市迅雷网络技术有限公司",
                 company_name: "迅雷网络",
                 company_logo: require("@/image/company/xunlei.jpg"),
                 company_description: "基于共享经济的互联网云计算平台",
@@ -140,12 +143,13 @@ export default {
                 company_website: "www.xunlei.com",
                 company_introduction: "迅雷产品迅雷X手机迅雷迅雷影音产品logo迅雷客户端移动app精彩，一下就有！迅雷介绍迅雷集团（纳斯达克：XNET）成立于2003年，是全球领先的共享计算与区块链技术创新企业，同时也是中国用户最多，历史最悠久的互联网品牌之一。迅雷旗下网心科技独创了共享计算模式，在此基础上推出的超级区块链平台迅雷链，具备全球领先的百万TPS高并发、秒级确认的领先性能，大幅提升了区块链技术的性能水准，致力于打造全球最大规模ToC区块链商业生态。迅雷面向个人用户和企业用户打造了丰富的下载加速、区块链、云计算、影音娱乐等产品及服务，为超过4亿用户创造了高效、智能、安全的互联网体验\n（手机也可找工作，投简历！关注“迅雷招聘”微信公众号，随时随地关注迅雷招聘动态，手指轻轻一点即可投递简历，使您的求职更加方便快捷！）",
                 job_total: 52,
-                resume_feedback: "96%",
+                resume_feedback: "96",
                 evaluation_total: 26,
                 login_date: "3天内"
-            },
+            },*/
             // 只抽取3位招聘官
-            hotRecruiter: [
+            hotRecruiter: [],
+            /*hotRecruiter: [
                 {
                     recruiter_name: "陈女士",
                     recruiter_avatar: require("@/image/avatar/recruiter_chen.png"),
@@ -161,7 +165,7 @@ export default {
                     recruiter_avatar: require("@/image/avatar/recruiter_zhao.png"),
                     recruiter_duty: "资深前端"
                 }
-            ],
+            ],*/
             evaluation: [
                 {
                     applicant_avatar: require("@/image/avatar/applicant_xie.png"),
@@ -206,7 +210,8 @@ export default {
                     create_date: "2022-3-12"
                 }
             ],
-            recruit_job: [
+            recruit_job: [],
+            /*recruit_job: [
                 {
                     job_duty: "高级前端开发工程师",
                     job_salary: "25-45K·16薪",
@@ -242,14 +247,55 @@ export default {
                     job_year: "5-10年",
                     education: "本科"
                 },
-            ],
+            ],*/
         }
     },
     mounted() {
         // 设置页面主内容最小高度
         setMinHeight(this, this.$refs.company_introduce);
     },
+    created() {
+        this.initData()
+    },
     methods: {
+        initData() {
+            let getCompany = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/info/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                    this.company = Object.assign({},{},res.data.company);
+                }
+            };
+            let getHotRecruiter = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/infoHotRecruiter/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.hotRecruiter.forEach(item => {
+                        item.recruiter_avatar = require("@/image/avatar/" + item.recruiter_avatar);
+                    })
+                    
+                    this.hotRecruiter = Object.assign([],[],res.data.hotRecruiter);
+                }
+            };
+            let getRecruitJob = async () => {
+                const res = await this.$axios.request({
+                    url: `/company/listJob/${this.$route.query.company_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.recruit_job = Object.assign([],[],res.data.recruit_job);
+                }
+            };
+            this.$axios.request([getCompany(),getHotRecruiter(),getRecruitJob()]);
+        },
         filter(data) {
             return data.split("\n");
         },
@@ -344,7 +390,7 @@ main{
                                 font-weight: 500;
                                 display: flex;
                                 color: @fontColor;
-                                .el-link-active();
+                              .el-link-active();
                             }
                             p{
                                 color: @promptColor;
@@ -361,7 +407,7 @@ main{
                     font-size: 15px;
                     span + span{
                         margin: 0 10px 0 16px;
-                        .el-link-active();
+                      .el-link-active();
                         cursor: pointer;
                     }
                 }
@@ -388,7 +434,7 @@ main{
                     }
                 }
                 color: @promptColor;
-                .el-link-active();
+              .el-link-active();
             }
         }
     }
@@ -419,8 +465,13 @@ main{
                         margin-left: 12px;
                     }
                     span{
+                        display: inline-block;
                         position: relative;
                         bottom: 2px;
+                        max-width: 210px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                     }
                 }
             }
@@ -435,8 +486,8 @@ main{
                         color: @fontColor;
                         display: inline-block;
                         max-width: 130px;
-                        .text-overflow();
-                        .el-link-active();
+                      .text-overflow();
+                      .el-link-active();
                     }
                     .job-salary{
                         display: inline-block;
@@ -451,7 +502,7 @@ main{
                 }
                 .show-more{
                     color: @fontColor;
-                    .el-link-active();
+                  .el-link-active();
                     background: @background;
                     width: 100%;
                     padding: 10px 0;

@@ -10,13 +10,13 @@
       <span class="sub-title">切换城市，寻找心仪的工作</span>
     </div>
     <div class="city-list-content">
-      <div class="content-prompt">
+      <div class="content-prompt" v-if="!isUserSelect">
         <p>亲爱的用户您好:</p>
         <p>选择您心仪的城市，系统将为您自动导航</p>
       </div>
-      <div class="current-city">
+      <div class="current-city" v-if="!isUserSelect">
         <span class="current-position">当前定位：</span>
-        <el-link class="city-name">
+        <el-link class="city-name" @click="citySelect(currentCity)">
           <i class="el-icon-location-information"></i>
           <span>{{ currentCity }}</span>
         </el-link>
@@ -42,7 +42,7 @@
           </dl>
         </div>
       </div>
-      <div class="content-footer">其他城市陆续开通中，敬请期待~</div>
+      <div class="content-footer" v-if="!isUserSelect">其他城市陆续开通中，敬请期待~</div>
     </div>
   </el-dialog>
 </template>
@@ -58,6 +58,10 @@ export default {
         currentCity: {
             type: String,
             default: "全国"
+        },
+        isUserSelect: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -234,7 +238,7 @@ export default {
             .el-link{
                 color: @fontColor;
                 border: 1px solid @borderColor;
-                width: 76px;
+                padding: 0 15px;
                 transition: .3s;
                 &:hover{
                     color: @mainColor;

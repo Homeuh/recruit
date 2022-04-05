@@ -1,6 +1,6 @@
 <template>
   <div class="interview-evaluation">
-    <h3>面试评价<el-link v-if="showMoreLink" class="show-more-link">查看更多评价</el-link></h3>
+    <h3>面试评价<el-link v-if="showMoreLink" class="show-more-link" href="/profession/evaluation">查看更多评价</el-link></h3>
     <div class="total-evaluation-score" v-if="isCompany">
       <div class="score-wrapper">
         <span>综合评分</span>
@@ -60,7 +60,7 @@
         </dd>
       </dl>
     </div>
-    <el-link v-if="showMoreBtn" class="show-more-btn" href="/company/evaluation">查看更多评价</el-link>
+    <el-link v-if="showMoreBtn" class="show-more-btn" :href="'/company/evaluation?company_id=' + $route.query.company_id">查看更多评价</el-link>
     <!-- 分页栏 -->
     <div v-if="isEvaluation" class="page margin-20per">
       <el-pagination

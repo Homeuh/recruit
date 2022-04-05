@@ -37,7 +37,7 @@
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary">注册/登录</el-button>
+                <el-button type="primary" @click="submitForm('loginForm')">注册/登录</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -83,7 +83,7 @@
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary">注册/登录</el-button>
+                <el-button type="primary" @click="submitForm('loginForm')">注册/登录</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -136,7 +136,7 @@
                   </div>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary">立即登录</el-button>
+                  <el-button type="primary" @click="submitForm('loginForm')">立即登录</el-button>
                 </el-form-item>
               </el-form>
             </div >
@@ -149,7 +149,7 @@
                 <el-input type="password" placeholder="请输入密码" v-model="passwordForm.password" prefix-icon="el-icon-lock" show-password></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary">立即登录</el-button>
+                <el-button type="primary" @click="submitForm('passwordForm')">立即登录</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -170,6 +170,7 @@ import * as Constant from "@/common/constants.js";
 export default {
     name: "Login",
     created() {
+        this.checkUserType();
         this.getValidateCode();
     },
     destroyed() {
@@ -198,11 +199,11 @@ export default {
             }
         };
         let checkPassword = (rule, value, callback) => {
-            let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{6,16}$/;
+            let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{6,18}$/;
             if (value === "") {
                 callback(new Error("请输入密码"));
             } else if (!reg.test(value)) {
-                callback(new Error("密码必须包含字母和数字，且在6-16位之间"));
+                callback(new Error("密码必须包含字母和数字，且在6-18位之间"));
             } else {
                 callback();
             }
@@ -236,19 +237,19 @@ export default {
             // 验证码表单登录规则
             loginFormRules: {
                 phone: [
-                    { validator: checkPhone, trigger: 'blur' }
+                    { validator: checkPhone, trigger: ['blur','change'] }
                 ],
                 verifyCode: [
-                    { validator: checkVerifyCode, trigger: 'blur' }
+                    { validator: checkVerifyCode, trigger: ['blur','change'] }
                 ]
             },
             // 密码表单登录规则
             passwordFormRules: {
                 phone: [
-                    { validator: checkPhone, trigger: 'blur' }
+                    { validator: checkPhone, trigger: ['blur','change'] }
                 ],
                 password: [
-                    { validator: checkPassword, trigger: 'blur' }
+                    { validator: checkPassword, trigger: ['blur','change'] }
                 ]
             },
             // 验证码
@@ -256,6 +257,11 @@ export default {
         }
     },
     methods: {
+        checkUserType() {
+            if(!this.userType){
+                this.userType = Constant.REGISTER_TO_INTERVIEW;
+            }
+        },
         // 登录状态改变: 求职 / 招聘 / 直接登录
         changLogin(userType) {
             this.resetForm();
@@ -281,14 +287,82 @@ export default {
             this.loginType = toggle.loginType;
             this.getValidateCode();
         },
+        // 提交登录表单
+        submitForm(formName){
+            this.$refs[formName].validate(async (valid) => {
+                if (valid) {
+                    if(formName === 'loginForm') {
+                        let login_role = this.userType === this.interview ? "0" : (this.userType === this.recruit ? "1" : "");
+                        const res = await this.$axios.request({
+                            url: `/login/getUserByPhone`,
+                            method: "get",
+                            params: {
+                                login_phone: this.loginForm.phone,
+                                login_role: login_role
+                            }
+                        });
+                        console.log(res);
+                        if (res.msg === 'success') {
+                            window.localStorage.setItem("login_id", res.data.login_id);
+                            window.localStorage.setItem("login_role", res.data.login_role);
+                            this.$store.commit("setLogin");
+                            // 招聘官要验证是否为刚注册用户，若是，则跳转注册信息页
+                            if(login_role === "1") {
+                                const res = await this.$axios.request({
+                                    url: `/recruiter/info/${this.$store.state.login_id}`,
+                                    method: "get"
+                                });
+                                console.log(res);
+                                if(res.msg !== "success" || !res.data){
+                                    return this.$router.push("/register");
+                                }
+                            }
+                        }
+                        else {
+                            this.$message.error(res.msg);
+                            return this.resetForm();
+                            
+                        }
+                    }
+                    else if(formName === 'passwordForm') {
+                        const res = await this.$axios.request({
+                            url: `/login/getUserByPass/${this.passwordForm.phone}/${this.passwordForm.password}`,
+                            method: "get"
+                        });
+                        console.log(res);
+                        if (res.msg === 'success') {
+                            this.$store.commit("setLogin", {
+                                login_id: res.data.login_id,
+                                login_role: res.data.login_role
+                            });
+                        } else {
+                            this.$message.error("账号或密码错误，请重新登录");
+                            return this.resetForm();
+                        }
+                    }
+                    this.$message.success("登录成功");
+                    await this.$router.push("/home");
+                } else {
+                    // alert("登录失败");
+                    this.$message.error("登录信息有误，请重新输入");
+                    this.resetForm();
+                }
+            })
+        },
         // 重置登录表单
         resetForm() {
-            for (const key of Object.keys(this.loginForm)) {
-                this.loginForm[key] = "";
+            if(this.$refs.loginForm){
+                this.$refs.loginForm.resetFields();
             }
-            for (const key of Object.keys(this.passwordForm)) {
-                this.passwordForm[key] = "";
+            if(this.$refs.passwordForm) {
+                this.$refs.passwordForm.resetFields();
             }
+            // for (const key of Object.keys(this.loginForm)) {
+            //     this.loginForm[key] = "";
+            // }
+            // for (const key of Object.keys(this.passwordForm)) {
+            //     this.passwordForm[key] = "";
+            // }
         }
     }
 }
@@ -297,8 +371,8 @@ export default {
 <style lang="less" scoped>
 @loginColor: #00c2b3;
 .container{
-    width: 100vw;
-    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
     background: #2BB594;
     position: relative;
     .login-wrapper{
