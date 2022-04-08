@@ -29,7 +29,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </h2>
-        <div class="collect" v-if="this.collectList.length === 0">
+        <div class="collect" v-if="collectList.length === 0">
           <el-empty :image-size="200"></el-empty>
         </div>
         <div class="collect" v-else>

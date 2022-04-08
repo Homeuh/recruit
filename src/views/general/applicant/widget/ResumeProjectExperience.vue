@@ -2,10 +2,15 @@
     <div class="resume-project-experience">
       <div class="project-experience" v-if="!editProjectExperience">
         <h2>项目经验<span data-html2canvas-ignore="true" @click="editOpen('editProjectExperience')"><i class="el-icon-circle-plus-outline"></i>添加</span></h2>
-        <div class="content">
+        <div class="content" v-if="projectExperienceList.length === 0">
+            <el-empty :image-size="200"></el-empty>
+        </div>
+        <div class="content" v-else>
           <div class="project-experience-wrapper" v-for="(projectExperience, index) in projectExperienceList" :key="projectExperience.project_name + index">
             <el-button type="text" icon="el-icon-edit" class="edit"
                        @click="toggleEdit('editProjectExperience',projectExperience, projectExperienceForm)">编辑</el-button>
+            <el-button type="text" icon="el-icon-delete-solid" class="remove"
+                       @click="remove(projectExperience)">删除</el-button>
             <img v-if="$store.state.onlyReadResume" class="icon"
                  :src="require('@/image/illustration/el-icon-project.png')"
                  style="width: 45px; height: 45px; float: left" />
@@ -14,7 +19,10 @@
               <h3>
                 <span>{{ projectExperience.project_name }}</span>
                 <span>{{ projectExperience.project_duty }}</span>
-                <span>{{ projectExperience.start_date }}&nbsp;-&nbsp;{{ projectExperience.end_date }}</span>
+                <span>
+                    {{ projectExperience.start_date.split("-").slice(0,2).join(".") }}
+                    &nbsp;-&nbsp;
+                    {{ projectExperience.end_date.split("-").slice(0,2).join(".") }}</span>
               </h3>
               <div class="project-description">
                 <h4>项目介绍</h4>
@@ -49,6 +57,7 @@
                       type="month"
                       placeholder="开始时间"
                       format="yyyy.MM"
+                      value-format="yyyy-MM-dd"
                       :picker-options="{
                           disabledDate(time) {
                             return time.getTime() > Date.now();
@@ -61,6 +70,7 @@
                       type="month"
                       placeholder="结束时间"
                       format="yyyy.MM"
+                      value-format="yyyy-MM-dd"
                       :picker-options="{
                           disabledDate(time) {
                             return time.getTime() > Date.now();
@@ -99,6 +109,12 @@
     export default {
         name: "ResumeProjectExperience",
         components: { SymbolIcon, Editor},
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             let checkUrl = (rule, value, callback) => {
                 let reg = 	/^(https?:\/\/)([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
@@ -111,8 +127,10 @@
                 }
             };
             return {
-                projectExperienceList: [
+                projectExperienceList: [],
+                /* projectExperienceList: [
                     {
+                        project_id: "",
                         project_name: "万优招聘网站",
                         project_description: "基于Vue全家桶 + ElementUI的招聘网站，模拟boss直聘",
                         project_duty: "项目负责人",
@@ -124,6 +142,7 @@
                         project_url: "https://www.gitee.com"
                     },
                     {
+                        project_id: "",
                         project_name: "电商后台管理系统",
                         project_description: "项目技术：Vue2全家桶 + axios + Less + Echarts\n" +
                             "项目特点：\n" +
@@ -137,8 +156,10 @@
                         end_date: "2021.11",
                         project_url: "https://www.github.com"
                     }
-                ],
+                ], */
                 projectExperienceForm: {
+                    project_id: "",
+                    resume_id: this.resume_id,
                     project_name: "",
                     project_description: "",
                     project_duty: "",
@@ -174,7 +195,20 @@
                 editProjectExperience: false,
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/project-experience/list/${this.resume_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.projectExperienceList = Object.assign([],[],res.data.projectExperienceList);
+                }
+            },
             // 切换为编辑框
             editOpen(editDialog){
                 this[editDialog] = !this[editDialog];
@@ -196,10 +230,29 @@
             filterText(data) {
                 return data.split("\n");
             },
+            // 项目经验删除
+            async remove(projectExperience) {
+                const res = await this.$axios.request({
+                    url: `/project-experience/delete`,
+                    method: "delete",
+                    data: projectExperience
+                })
+                console.log(res);
+                this.initData();
+            },
             // 提交表单
             submitForm(formName, editDialog) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
+                        const res = await this.$axios.request({
+                            url: `/project-experience/saveOrUpdate`,
+                            method: "post",
+                            data: this.projectExperienceForm
+                        });
+                        console.log(res);
+                        if(res.msg === 'success'){
+                            this.initData();
+                        }
                         this.$message.success("保存成功");
                         this.resetForm(editDialog);
                     } else {
@@ -211,7 +264,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.projectExperienceForm)) {
-                    this.projectExperienceForm[key] = ""
+                    if(key !== "resume_id") { 
+                        this.projectExperienceForm[key] = ""
+                    }
                 }
                 this.editOpen(editDialog);
             }
@@ -280,16 +335,19 @@
                 h3 span:last-of-type{
                     display: none;
                 }
-                .edit{
+                .edit,.remove{
                     display: block;
                 }
             }
-            .edit{
+            .edit,.remove{
                 display: none;
                 position: absolute;
                 right: 10px;
                 top: 10px;
                 z-index: 1;
+                &.edit{
+                    right: 80px;
+                }
             }
             .icon{
                 font-size: 45px;

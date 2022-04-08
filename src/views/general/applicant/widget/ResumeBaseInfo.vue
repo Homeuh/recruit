@@ -97,6 +97,12 @@
     export default {
         name: "ResumeBaseInfo",
         components: { CityDialog},
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             let checkPhone = (rule, value, callback) => {
                 let reg = /^[1][34578][0-9]{9}$/;
@@ -183,13 +189,13 @@
             },
         },
         created() {
-            // this.$store.commit("setLogin");
+            // console.log(this.resume_id);
             this.initData();
         },
         methods: {
             async initData() {
                 const res = await this.$axios.request({
-                    url: `/applicant/baseInfo/${this.$store.state.login_id}`,
+                    url: `/applicant/baseInfo/${this.resume_id}`,
                     method: "get",
                 });
                 console.log(res);

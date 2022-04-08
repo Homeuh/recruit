@@ -33,6 +33,12 @@
     export default {
         name: "ResumeSelfEvaluation",
         components: { Editor },
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             return {
                 resume: {},
@@ -59,7 +65,7 @@
         methods: {
             async initData() {
                 const res = await this.$axios.request({
-                    url: `/resume/selfEvaluation/${this.$store.state.login_id}`,
+                    url: `/resume/selfEvaluation/${this.resume_id}`,
                     method: "get",
                 });
                 console.log(res);

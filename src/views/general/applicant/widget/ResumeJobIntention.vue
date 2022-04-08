@@ -2,10 +2,15 @@
     <div class="resume-job-intention">
       <div class="job-intention" v-if="!editJobIntention">
         <h2>求职意向<span data-html2canvas-ignore="true" @click="editOpen('editJobIntention')"><i class="el-icon-circle-plus-outline"></i>添加</span></h2>
-        <div class="content">
+        <div class="content" v-if="jobIntentionList.length === 0">
+            <el-empty :image-size="200"></el-empty>
+        </div>
+        <div class="content" v-else>
           <div class="job-intention-wrapper" v-for="(jobIntention, index) in jobIntentionList" :key="jobIntention.intention_duty + index">
             <el-button type="text" icon="el-icon-edit" class="edit"
-                       @click="toggleEdit('editJobIntention',jobIntention, jobIntentionForm)">编辑</el-button>
+                       @click="toggleEdit('editJobIntention',jobIntention, jobIntentionForm,index)">编辑</el-button>
+            <el-button type="text" icon="el-icon-delete-solid" class="remove"
+                       @click="remove(jobIntention)">删除</el-button>
             <p>
               <i class="el-icon-zhiwei position-icon"></i>
               <span>{{jobIntention.intention_duty}}</span>
@@ -14,7 +19,7 @@
               <el-divider direction="vertical"></el-divider>
               <span>{{jobIntention.intention_city}}</span>
               <el-divider direction="vertical"></el-divider>
-              <span>{{jobIntention.min_salary.split("")[0]}}&nbsp;-&nbsp;{{jobIntention.max_salary}}</span>
+              <span>{{jobIntention.min_salary.split("K")[0]}}&nbsp;-&nbsp;{{jobIntention.max_salary}}</span>
               <el-divider direction="vertical"></el-divider>
               <span>{{jobIntention.arrive_date}}</span>
             </p>
@@ -91,27 +96,38 @@
     export default {
         name: "ResumeJobIntention",
         components: { CityDialog},
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             return {
-                jobIntentionList: [
-                    {
-                        intention_duty: "前端工程师",
-                        intention_type: "全职",
-                        intention_city: "深圳",
-                        min_salary: "8K",
-                        max_salary: "14K",
-                        arrive_date: "2周内"
-                    },
-                    {
-                        intention_duty: "web前端开发工程师",
-                        intention_type: "全职",
-                        intention_city: "广州",
-                        min_salary: "7K",
-                        max_salary: "13K",
-                        arrive_date: "1个月内"
-                    }
-                ],
+                jobIntentionList: [],
+                // jobIntentionList: [
+                //     {
+                //         intention_id: "",
+                //         intention_duty: "前端工程师",
+                //         intention_type: "全职",
+                //         intention_city: "深圳",
+                //         min_salary: "8K",
+                //         max_salary: "14K",
+                //         arrive_date: "2周内"
+                //     },
+                //     {
+                //         intention_id: "",
+                //         intention_duty: "web前端开发工程师",
+                //         intention_type: "全职",
+                //         intention_city: "广州",
+                //         min_salary: "7K",
+                //         max_salary: "13K",
+                //         arrive_date: "1个月内"
+                //     }
+                // ],
                 jobIntentionForm: {
+                    intention_id: "",
+                    resume_id: this.resume_id,
                     intention_duty: "",
                     intention_type: "",
                     intention_city: "",
@@ -145,13 +161,26 @@
                 dialogVisible: false
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/job-intention/list/${this.resume_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.jobIntentionList = Object.assign([],[],res.data.jobIntentionList);
+                }
+            },
             // 切换为编辑框
             editOpen(editDialog){
                 this[editDialog] = !this[editDialog];
             },
             // 切换为编辑框时 如果是编辑按钮，传递表单所需属性值
-            toggleEdit(editDialog,defaultForm,editForm){
+            toggleEdit(editDialog, defaultForm, editForm){
                 if (defaultForm) {
                     for (const [defaultKey, defaultValue] of Object.entries(defaultForm)) {
                         for (const editKey of Object.keys(editForm)) {
@@ -163,10 +192,29 @@
                 }
                 this.editOpen(editDialog);
             },
+            // 求职意向删除
+            async remove(jobIntention) {
+                const res = await this.$axios.request({
+                    url: `/job-intention/delete`,
+                    method: "delete",
+                    data: jobIntention
+                })
+                console.log(res);
+                this.initData();
+            },
             // 提交表单
             submitForm(formName, editDialog) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
+                        const res = await this.$axios.request({
+                            url: `/job-intention/saveOrUpdate`,
+                            method: "post",
+                            data: this.jobIntentionForm
+                        });
+                        console.log(res);
+                        if(res.msg === 'success'){
+                            this.initData();
+                        }
                         this.$message.success("保存成功");
                         this.resetForm(editDialog);
                     } else {
@@ -178,7 +226,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.jobIntentionForm)) {
-                    this.jobIntentionForm[key] = ""
+                    if(key !== "resume_id") {
+                        this.jobIntentionForm[key] = "";
+                    }
                 }
                 this.editOpen(editDialog);
             }
@@ -247,16 +297,19 @@
                 h3 span:last-of-type{
                     display: none;
                 }
-                .edit{
+                .edit,.remove{
                     display: block;
                 }
             }
-            .edit{
+            .edit,.remove{
                 display: none;
                 position: absolute;
                 right: 10px;
                 top: 10px;
                 z-index: 1;
+                &.edit{
+                    right: 80px;
+                }
             }
             .icon{
                 font-size: 45px;

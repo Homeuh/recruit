@@ -22,7 +22,7 @@
             >{{ nav }}
             </div>
           </nav>
-          <div class="apply" v-if="this.applyList.length === 0">
+          <div class="apply" v-if="applyList.length === 0">
             <el-empty :image-size="200"></el-empty>
           </div>
           <div class="apply" v-else>

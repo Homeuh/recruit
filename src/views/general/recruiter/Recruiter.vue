@@ -49,7 +49,7 @@
                   <span>（共{{ recent_interview_num }}场）</span>
                   <el-link href="/recruiter/interview">查看更多<i class="el-icon-arrow-right"></i> </el-link>
                 </h2>
-                <div class="content" v-if="this.interviewList.length === 0">
+                <div class="content" v-if="interviewList.length === 0">
                   <el-empty :image-size="200"></el-empty>
                 </div>
                 <div class="content" v-else>
@@ -120,7 +120,7 @@
                   <span>（共{{ recent_apply_num }}份）</span>
                   <el-link href="/recruiter/resume">查看更多<i class="el-icon-arrow-right"></i> </el-link>
                 </h2>
-                <div class="content" v-if="this.applyList.length === 0">
+                <div class="content" v-if="applyList.length === 0">
                   <el-empty :image-size="200"></el-empty>
                 </div>
                 <div class="content" v-else>

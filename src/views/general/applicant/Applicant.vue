@@ -22,7 +22,7 @@
               <span>（共{{ interview_num }}场）</span>
               <el-link href="/applicant/interview">查看更多<i class="el-icon-arrow-right"></i></el-link>
             </h2>
-            <div class="content" v-if="this.interviewList.length === 0">
+            <div class="content" v-if="interviewList.length === 0">
               <el-empty :image-size="200"></el-empty>
             </div>
             <div class="content" v-else>
@@ -69,7 +69,7 @@
               <span>（共{{ apply_num }}份）</span>
               <el-link href="/applicant/apply">查看更多<i class="el-icon-arrow-right"></i></el-link>
             </h2>
-            <div class="content" v-if="this.applyList.length === 0">
+            <div class="content" v-if="applyList.length === 0">
               <el-empty :image-size="200"></el-empty>
             </div>
             <div class="content" v-else>
@@ -181,7 +181,7 @@
       <!-- 底部信息栏 -->
       <GeneralFooter />
       
-      <PreviewPicture v-if="previewVisible" :preview.sync="previewVisible" isResume="true"/>
+      <PreviewPicture v-if="previewVisible" :preview.sync="previewVisible" :isResume="true" :applicant_id="applicant.applicant_id"/>
     </div>
 </template>
 
@@ -389,17 +389,17 @@ export default {
                     this.applicant = Object.assign({},{},res.data.applicant);
                 }
             };
-            // let getJobIntention = async () => {
-            //     const res = await this.$axios.request({
-            //         url: `/company/listJob/${this.$route.query.company_id}`,
-            //         method: "get",
-            //     });
-            //     console.log(res);
-            //     if(res.msg === 'success'){
-            //         this.recruit_job = res.data.recruit_job;
-            //     }
-            // };
-            this.$axios.request([getApplicant()]);
+            let getJobIntention = async () => {
+                const res = await this.$axios.request({
+                    url: `/job-intention/info/${this.$store.state.login_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.jobIntention = Object.assign({},{},res.data.jobIntention);
+                }
+            };
+            this.$axios.request([getApplicant(),getJobIntention()]);
         },
         menuSelect(name) {
             this.currentMenu = name;

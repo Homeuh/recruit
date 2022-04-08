@@ -39,7 +39,7 @@
             this.editor.config.showFullScreen = this.showFullScreen
             this.editor.config.onchange = html => {
                 this.editorContent = html;
-                console.log(this.editorContent)
+                // console.log(this.editorContent)
                 this.$emit("update:content",this.editorEvent());
             };
             this.editor.config.placeholder = this.placeholder;
@@ -57,25 +57,55 @@
             // 切换为文本编辑器前，传递内容 转换 格式
             contentTransform() {
                 let str = "";
-                // 将\n的元数据 修改为 富文本编辑器所展示的ul无序列表数据
+                // 将\n的元数据 修改为 富文本编辑器所展示的ul无序列表数据 / ol有序列表数据
                 if(/\n/.test(this.editorContent)){
-                    str = "<ul>"
-                    this.editorContent.split("\n").forEach(item => {
-                        str += `<li>${item}</li>`
-                    })
-                    str += "</ul>";
+                    if(/\d\./.test(this.editorContent)){
+                        str += "<ol>"
+                        this.editorContent = this.editorContent.replace(/\d\./g, "");
+                        this.editorContent.split("\n").forEach(item => {
+                            str += `<li>${item}</li>`
+                        })
+                        str += "</ol>";
+                    } else {
+                        str = "<ul>"
+                        this.editorContent.split("\n").forEach(item => {
+                            str += `<li>${item}</li>`
+                        })
+                        str += "</ul>";
+                    }
                 } else {
                     str = this.editorContent;
                 }
                 return this.editorContent = str;
             },
+            getFormatText(children,tag) {
+                // console.log(tag);
+                let formatText = "";
+                children.forEach((item,index) => {
+                    if(tag === "ol"){
+                        formatText += Object.prototype.toString.call(item) !== '[object Object]' ? `${item}\n` : `${index + 1}. ${this.getFormatText(item.children)}`;
+                    } else {
+                        formatText += Object.prototype.toString.call(item) !== '[object Object]' ? `${item}\n` : this.getFormatText(item.children);
+                    }
+                    
+                })
+                return formatText;
+            },
             // 文本编辑器回调内容 格式化
             editorEvent() {
-                // 匹配一切中文
-                let pattern = /(\d.)*?[\u4e00-\u9fa5(，|,|。|.|？|?|:|：|、|!|！|（|）|(|)]+/g;
-                const result = this.editorContent.match(pattern);
-                console.log(result);
-                return result ? result.join("\n") : this.editorContent;
+                let formatText = "";
+                this.editor.txt.getJSON().forEach(item => {
+                    if(this.editor.txt.text()){
+                         if(item.tag === "br"){
+                            formatText += "\n";
+                        } else{
+                            // console.log(item.tag);
+                            formatText += this.getFormatText(item.children, item.tag);
+                        }
+                    }
+                })
+                console.log(formatText);
+                return formatText;
             }
         },
     }

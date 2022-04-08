@@ -6,7 +6,7 @@
             :url-list="[resumeImg]"
             :on-close="closeViewer"/>
       <!-- 绝对定位隐藏 -->
-      <Resume v-if="previewResume" ref="resume" style="position: absolute; top: -100%; transform: translateY(-100%)"/>
+      <Resume v-if="previewResume" :applicant_id="applicant_id" ref="resume" style="position: absolute; top: -100%; transform: translateY(-100%)"/>
       <!-- 绝对定位隐藏 -->
       <ProfessionDetail v-if="previewProfession" ref="profession" style="position: absolute; top: -100%; transform: translateY(-100%)"/>
     </div>
@@ -31,7 +31,11 @@
             isProfession: {
                 type: Boolean,
                 default: false
-            }
+            },
+            applicant_id: {
+                type: String,
+                default: ""
+            },
         },
         components: {
             Resume,
@@ -72,8 +76,8 @@
                 }).then((canvas) => {
                     console.log(canvas);
                     // 截图成功后销毁组件
-                    this.previewResume = false;
-                    this.previewProfession = false;
+                    // this.previewResume = false;
+                    // this.previewProfession = false;
                     //将canvas转为base64格式
                     // const imgUrl = canvas.toDataURL("image/png");
                     // console.log(imgUrl);

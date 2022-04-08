@@ -23,7 +23,7 @@
             >{{ nav }}
             </div>
           </nav>
-          <div class="interview" v-if="this.interviewList.length === 0">
+          <div class="interview" v-if="interviewList.length === 0">
             <el-empty :image-size="200"></el-empty>
           </div>
           <div class="interview" v-else>

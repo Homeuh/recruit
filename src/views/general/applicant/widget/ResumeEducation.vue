@@ -2,10 +2,15 @@
     <div class="resume-education">
       <div class="education" v-if="!editEducation">
         <h2>教育经历<span data-html2canvas-ignore="true" @click="editOpen('editEducation')"><i class="el-icon-circle-plus-outline"></i>添加</span></h2>
-        <div class="content">
+        <div class="content" v-if="educationList.length === 0">
+            <el-empty :image-size="200"></el-empty>
+        </div>
+        <div class="content" v-else>
           <div class="education-wrapper" v-for="(education, index) in educationList" :key="education.school_name + index">
             <el-button type="text" icon="el-icon-edit" class="edit"
                        @click="toggleEdit('editEducation',education, educationForm)">编辑</el-button>
+            <el-button type="text" icon="el-icon-delete-solid" class="remove"
+                       @click="remove(education)">删除</el-button>
             <img v-if="$store.state.onlyReadResume" class="icon"
                  :src="require('@/image/illustration/el-icon-school.png')"
                  style="width: 45px; height: 45px; float: left" />
@@ -20,7 +25,10 @@
                       <el-divider direction="vertical"></el-divider>
                       {{ education.major }}
                 </span>
-                <span>{{ education.start_date }}&nbsp;-&nbsp;{{ education.end_date }}</span>
+                <span>
+                    {{ education.start_date.split("-").slice(0,2).join(".") }}
+                    &nbsp;-&nbsp;
+                    {{ education.end_date.split("-").slice(0,2).join(".") }}</span>
               </h3>
               <div class="education-honor" v-if="education.honor">
                 <h4>荣誉 / 奖项</h4>
@@ -51,7 +59,8 @@
                       v-model="educationForm.start_date"
                       type="month"
                       placeholder="入学时间"
-                      format="yyyy.MM">
+                      format="yyyy.MM"
+                      value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item prop="end_date" label-width="0" class="end-date-form-item">
@@ -59,7 +68,8 @@
                       v-model="educationForm.end_date"
                       type="month"
                       placeholder="毕业时间"
-                      format="yyyy.MM">
+                      format="yyyy.MM"
+                      value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </el-form-item>
@@ -118,42 +128,53 @@
     export default {
         name: "ResumeEducation",
         components: { SymbolIcon},
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             return {
-                educationList: [
-                    {
-                        school_name: "清华大学",
-                        education: "本科",
-                        start_date: "2018.09",
-                        end_date: "2022.06",
-                        major: "软件工程",
-                        examination_flag: "N",
-                        fulltime_flag: "Y",
-                        honor: "国家奖学金、国家励志奖学金、红棉奖学金一等（学业优秀）、英语四六级",
-                        certificate: "软考中级软件设计师、软考中级数据库系统工程师",
-                        attached_info: ""
-                    },
-                    {
-                        school_name: "北京大学",
-                        education: "硕士",
-                        start_date: "2022.09",
-                        end_date: "2025.06",
-                        major: "电子信息工程",
-                        examination_flag: "Y",
-                        fulltime_flag: "N",
-                        honor: "",
-                        certificate: "",
-                        attached_info: "在XXX导师带领下完成SCI论文并发表至XXX网站"
-                    }
-                ],
+                educationList: [],
+                // educationList: [
+                //     {
+                //         education_id: "",
+                //         school_name: "清华大学",
+                //         education: "本科",
+                //         start_date: "2018.09",
+                //         end_date: "2022.06",
+                //         major: "软件工程",
+                //         examination_flag: "N",
+                //         fulltime_flag: "Y",
+                //         honor: "国家奖学金、国家励志奖学金、红棉奖学金一等（学业优秀）、英语四六级",
+                //         certificate: "软考中级软件设计师、软考中级数据库系统工程师",
+                //         attached_info: ""
+                //     },
+                //     {
+                //         education_id: "",
+                //         school_name: "北京大学",
+                //         education: "硕士",
+                //         start_date: "2022.09",
+                //         end_date: "2025.06",
+                //         major: "电子信息工程",
+                //         examination_flag: "Y",
+                //         fulltime_flag: "N",
+                //         honor: "",
+                //         certificate: "",
+                //         attached_info: "在XXX导师带领下完成SCI论文并发表至XXX网站"
+                //     }
+                // ],
                 educationForm: {
+                    education_id: "",
+                    resume_id: this.resume_id,
                     school_name: "",
                     education: "",
                     start_date: "",
                     end_date: "",
                     major: "",
-                    examination_flag: "",
-                    fulltime_flag: "",
+                    examination_flag: "Y",
+                    fulltime_flag: "Y",
                     honor: "",
                     certificate: "",
                     attached_info: ""
@@ -182,7 +203,20 @@
                 fulltime_flag: true,
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/education/list/${this.resume_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.educationList = Object.assign([],[],res.data.educationList);
+                }
+            },
             // 切换为编辑框
             editOpen(editDialog){
                 this[editDialog] = !this[editDialog];
@@ -199,6 +233,7 @@
                     }
                     this.examination_flag = editForm.examination_flag === 'Y';
                     this.fulltime_flag = editForm.fulltime_flag === 'Y';
+                    // console.log(this.educationForm);
                 }
                 this.editOpen(editDialog);
             },
@@ -206,10 +241,29 @@
                 status ? this.educationForm[key] = 'Y' : this.educationForm[key] = 'N';
                 // console.log(this.educationForm)
             },
+            // 教育经历删除
+            async remove(education) {
+                const res = await this.$axios.request({
+                    url: `/education/delete`,
+                    method: "delete",
+                    data: education
+                })
+                console.log(res);
+                this.initData();
+            },
             // 提交表单
             submitForm(formName, editDialog) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
+                        const res = await this.$axios.request({
+                            url: `/education/saveOrUpdate`,
+                            method: "post",
+                            data: this.educationForm
+                        });
+                        console.log(res);
+                        if(res.msg === 'success'){
+                            this.initData();
+                        }
                         this.$message.success("保存成功");
                         this.resetForm(editDialog);
                     } else {
@@ -221,7 +275,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.educationForm)) {
-                    this.educationForm[key] = ""
+                    if(key !== "resume_id") { 
+                        this.educationForm[key] = ""
+                    }
                 }
                 this.examination_flag = true;
                 this.fulltime_flag = true;
@@ -292,16 +348,19 @@
                 h3 >span:last-of-type{
                     display: none;
                 }
-                .edit{
+                .edit,.remove{
                     display: block;
                 }
             }
-            .edit{
+            .edit,.remove{
                 display: none;
                 position: absolute;
                 right: 10px;
                 top: 10px;
                 z-index: 1;
+                &.edit{
+                    right: 80px;
+                }
             }
             .icon{
                 font-size: 45px;

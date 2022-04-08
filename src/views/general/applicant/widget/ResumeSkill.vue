@@ -2,11 +2,16 @@
     <div class="resume-skill">
       <div class="skill" v-if="!editSkillList" ref="skill">
         <h2>专业技能<span data-html2canvas-ignore="true" @click="editOpen('editSkillList')"><i class="el-icon-circle-plus-outline"></i>添加</span></h2>
-        <div class="content">
+        <div class="content" v-if="skillList.length === 0">
+            <el-empty :image-size="200"></el-empty>
+        </div>
+        <div class="content" v-else>
           <div v-for="(skill,index) in skillList" :key="skill.skill_name + index"
                class="skill-degree">
             <el-button type="text" icon="el-icon-edit" class="edit"
                        @click="toggleEdit('editSkillList',skill, skillForm)">编辑</el-button>
+            <el-button type="text" icon="el-icon-delete-solid" class="remove"
+                       @click="remove(skill)">删除</el-button>
             <span class="skill-name">{{ skill.skill_name }}</span>
             <el-progress color="#00c2b3" :stroke-width="13" :percentage="skillPercentage(skill.mastery_degree)" :format="((val) => skillFormat(val,skill))"></el-progress>
           </div>
@@ -42,6 +47,12 @@
 <script>
     export default {
         name: "Resume-skill",
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         mounted() {
             this.setMinWidth();
         },
@@ -50,13 +61,16 @@
         },
         data() {
             return {
-                skillList: [
-                    { skill_name: "SQL、MySQL", mastery_degree: "精通"},
-                    { skill_name: "HTML、CSS、JS", mastery_degree: "熟练"},
-                    { skill_name: "算法、数据结构", mastery_degree: "掌握"},
-                    { skill_name: "webpack、git、svn", mastery_degree: "了解"},
-                ],
+                skillList: [],
+                /* skillList: [
+                    { skill_id: "", skill_name: "SQL、MySQL", mastery_degree: "精通"},
+                    { skill_id: "", skill_name: "HTML、CSS、JS", mastery_degree: "熟练"},
+                    { skill_id: "", skill_name: "算法、数据结构", mastery_degree: "掌握"},
+                    { skill_id: "", skill_name: "webpack、git、svn", mastery_degree: "了解"},
+                ], */
                 skillForm: {
+                    skill_id: "",
+                    resume_id: this.resume_id,
                     skill_name: "",
                     mastery_degree: "",
                 },
@@ -72,12 +86,24 @@
                 editSkillList: false,
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/skill/list/${this.resume_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.skillList = Object.assign([],[],res.data.skillList);
+                }
+            },
             // 切换为编辑框
             editOpen(editDialog){
                 this[editDialog] = !this[editDialog];
-                this.setMinWidth();
-                console.log(1023)
+                // this.setMinWidth();
             },
             // 切换为编辑框时 如果是编辑按钮，传递表单所需属性值
             toggleEdit(editDialog,defaultForm,editForm){
@@ -113,10 +139,29 @@
                     skill.style.minWidth = minWidth + "px";
                 })
             },
+            // 专业技能删除
+            async remove(skill) {
+                const res = await this.$axios.request({
+                    url: `/skill/delete`,
+                    method: "delete",
+                    data: skill
+                })
+                console.log(res);
+                this.initData();
+            },
             // 提交表单
             submitForm(formName, editDialog) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
+                        const res = await this.$axios.request({
+                            url: `/skill/saveOrUpdate`,
+                            method: "post",
+                            data: this.skillForm
+                        });
+                        console.log(res);
+                        if(res.msg === 'success'){
+                            this.initData();
+                        }
                         this.$message.success("保存成功");
                         this.resetForm(editDialog);
                     } else {
@@ -128,7 +173,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.skillForm)) {
-                    this.skillForm[key] = ""
+                    if(key !== "resume_id") { 
+                        this.skillForm[key] = ""
+                    }
                 }
                 this.editOpen(editDialog);
             }
@@ -223,16 +270,19 @@
                 position: relative;
                 &:hover{
                     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
-                    .edit{
+                    .edit,.remove{
                         display: block;
                     }
                 }
-                .edit{
+                .edit,.remove{
                     display: none;
                     position: absolute;
                     right: 10px;
                     top: 10px;
                     z-index: 1;
+                    &.edit{
+                        right: 80px;
+                    }
                 }
                 span{
                     float: left;

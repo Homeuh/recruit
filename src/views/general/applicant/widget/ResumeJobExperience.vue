@@ -2,10 +2,15 @@
     <div class="resume-job-experience">
       <div class="job-experience" v-if="!editJobExperience">
         <h2>工作经验<span data-html2canvas-ignore="true" @click="editOpen('editJobExperience')"><i class="el-icon-circle-plus-outline"></i>添加</span></h2>
-        <div class="content">
+        <div class="content" v-if="jobExperienceList.length === 0">
+            <el-empty :image-size="200"></el-empty>
+        </div>
+        <div class="content" v-else>
           <div class="job-experience-wrapper" v-for="(jobExperience, index) in jobExperienceList" :key="jobExperience.job_duty + index">
             <el-button type="text" icon="el-icon-edit" class="edit"
                        @click="toggleEdit('editJobExperience',jobExperience, jobExperienceForm)">编辑</el-button>
+            <el-button type="text" icon="el-icon-delete-solid" class="remove"
+                       @click="remove(jobExperience)">删除</el-button>
             <img v-if="$store.state.onlyReadResume" class="icon"
                  :src="require('@/image/illustration/el-icon-company.png')"
                  style="width: 45px; height: 45px; float: left" />
@@ -14,7 +19,11 @@
               <h3>
                 <span>{{ jobExperience.company_name }}</span>
                 <span>{{ jobExperience.job_duty }}</span>
-                <span>{{ jobExperience.start_date }}&nbsp;-&nbsp;{{ jobExperience.end_date }}</span>
+                <span>
+                    {{ jobExperience.start_date.split("-").slice(0,2).join(".") }}
+                    &nbsp;-&nbsp;
+                    {{ jobExperience.end_date.split("-").slice(0,2).join(".") }}
+                </span>
               </h3>
               <p v-for="(des,index) in filterText(jobExperience.job_description)" :key="des + index">{{ des }}</p>
             </div>
@@ -38,6 +47,7 @@
                       type="month"
                       placeholder="入职时间"
                       format="yyyy.MM"
+                      value-format="yyyy-MM-dd"
                       :picker-options="{
                           disabledDate(time) {
                             return time.getTime() > Date.now();
@@ -50,6 +60,7 @@
                       type="month"
                       placeholder="离职时间"
                       format="yyyy.MM"
+                      value-format="yyyy-MM-dd"
                       :picker-options="{
                           disabledDate(time) {
                             return time.getTime() > Date.now();
@@ -78,10 +89,18 @@
     export default {
         name: "ResumeJobExperience",
         components: { SymbolIcon, Editor},
+        props: {
+            resume_id: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             return {
-                jobExperienceList: [
+                jobExperienceList: [],
+                /* jobExperienceList: [
                     {
+                        experience_id: "",
                         company_name: "迅雷网络",
                         job_duty: "前端工程师",
                         job_description: "1.参与产品需求、研发设计的相关讨论，从前端设计角度提升产品使用性和美观度的要求；\n" +
@@ -91,6 +110,7 @@
                         end_date: "2020.06",
                     },
                     {
+                        experience_id: "",
                         company_name: "字节跳动",
                         job_duty: "前端开发工程师",
                         job_description: "1、 根据工作安排高效、高质地完成代码编写，确保符合规范的前端代码规范；\n" +
@@ -101,8 +121,10 @@
                         start_date: "2016.09",
                         end_date: "2018.10",
                     }
-                ],
+                ], */
                 jobExperienceForm: {
+                    experience_id: "",
+                    resume_id: this.resume_id,
                     company_name: "",
                     job_duty: "",
                     job_description: "",
@@ -130,13 +152,26 @@
                 editJobExperience: false,
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/job-experience/list/${this.resume_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    this.jobExperienceList = Object.assign([],[],res.data.jobExperienceList);
+                }
+            },
             // 切换为编辑框
             editOpen(editDialog){
                 this[editDialog] = !this[editDialog];
             },
             // 切换为编辑框时 如果是编辑按钮，传递表单所需属性值
-            toggleEdit(editDialog,defaultForm,editForm){
+            toggleEdit(editDialog, defaultForm, editForm){
                 if (defaultForm) {
                     for (const [defaultKey, defaultValue] of Object.entries(defaultForm)) {
                         for (const editKey of Object.keys(editForm)) {
@@ -146,16 +181,36 @@
                         }
                     }
                 }
+                console.log(this.jobExperienceForm);
                 this.editOpen(editDialog);
             },
             // 过滤文本
             filterText(data) {
                 return data.split("\n");
             },
+            // 工作经验删除
+            async remove(jobExperience) {
+                const res = await this.$axios.request({
+                    url: `/job-experience/delete`,
+                    method: "delete",
+                    data: jobExperience
+                })
+                console.log(res);
+                this.initData();
+            },
             // 提交表单
             submitForm(formName, editDialog) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
+                        const res = await this.$axios.request({
+                            url: `/job-experience/saveOrUpdate`,
+                            method: "post",
+                            data: this.jobExperienceForm
+                        });
+                        console.log(res);
+                        if(res.msg === 'success'){
+                            this.initData();
+                        }
                         this.$message.success("保存成功");
                         this.resetForm(editDialog);
                     } else {
@@ -167,7 +222,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.jobExperienceForm)) {
-                    this.jobExperienceForm[key] = ""
+                    if(key !== "resume_id") { 
+                        this.jobExperienceForm[key] = "";
+                    }
                 }
                 this.editOpen(editDialog);
             }
@@ -236,16 +293,19 @@
                 h3 span:last-of-type{
                     display: none;
                 }
-                .edit{
+                .edit,.remove{
                     display: block;
                 }
             }
-            .edit{
+            .edit,.remove{
                 display: none;
                 position: absolute;
                 right: 10px;
                 top: 10px;
                 z-index: 1;
+                &.edit{
+                    right: 80px;
+                }
             }
             .icon{
                 font-size: 45px;

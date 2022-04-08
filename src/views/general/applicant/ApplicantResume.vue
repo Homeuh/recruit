@@ -16,7 +16,7 @@
           </ul>
         </aside>
         <!-- 简历 -->
-        <Resume />
+        <Resume :applicant_id="applicant_id" v-if="applicant_id" />
       </main>
       <!-- 底部信息栏 -->
       <GeneralFooter />
@@ -36,8 +36,13 @@
             SymbolIcon,
             Resume
         },
+        created() {
+            this.$store.commit("setLogin");
+            this.getApplicantId();
+        },
         data() {
             return {
+                applicant_id: "",
                 menuList: [
                     { icon: "el-icon-gerenzhongxin", name: "个人中心", href: "/applicant"},
                     { icon: "el-icon-jianli", name: "我的简历", href: "/applicant/resume"},
@@ -51,6 +56,16 @@
             }
         },
         methods: {
+            async getApplicantId() {
+                const res = await this.$axios.request({
+                    url: `/applicant/getId/${this.$store.state.login_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === "success") {
+                    this.applicant_id = res.data.applicant_id;
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
