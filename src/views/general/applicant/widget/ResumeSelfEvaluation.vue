@@ -2,7 +2,7 @@
     <div class="resume-self-evaluation">
       <div class="self-evaluation" v-if="!editSelfEvaluation">
         <h2>个人优势<span data-html2canvas-ignore="true" @click="toggleEdit('editSelfEvaluation', resume, resumeForm)"><i class="el-icon-edit"></i>编辑</span></h2>
-        <div class="empty-box" v-if="Object.keys(resume).length === 0">
+        <div class="empty-box" v-if="Object.keys(resume).length === 0 || !resume.self_evaluation">
           <el-empty :image-size="200"></el-empty>
         </div>
         <div class="content" v-else>
@@ -51,7 +51,7 @@
                         "同时善于观察周围的事物，善于收集资料分析问题，并能快速解决问题。"
                 },*/
                 resumeForm: {
-                    resume_id: "",
+                    resume_id: this.resume_id,
                     applicant_id: "",
                     self_evaluation: ""
                 },
@@ -72,6 +72,8 @@
                 if(res.msg === 'success'){
                     this.resume = Object.assign({},{},res.data.resume);
                 }
+                // 获取完数据告知父组件已更新完毕,用于预览简历的异步通知
+                this.$emit("updatePart:resume", 1)
             },
             // 切换为编辑框
             editOpen(editDialog){
@@ -120,7 +122,9 @@
             // 重置表单
             resetForm(editDialog) {
                 for (const key of Object.keys(this.resumeForm)) {
-                    this.resumeForm[key] = ""
+                    if(key !== "resume_id"){
+                        this.resumeForm[key] = ""
+                    }
                 }
                 this.editOpen(editDialog);
             }

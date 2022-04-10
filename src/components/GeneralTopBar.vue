@@ -32,7 +32,7 @@
         </div>
         <!-- 用户操作: 求职者身份-->
         <div v-if="$store.state.login_role === '0'" class="user-applicant">
-          <el-link href="/applicant/message"><i class="el-icon-lingdang"></i></el-link>
+          <el-link @click="redirect('/applicant/message')"><i class="el-icon-lingdang"></i></el-link>
           <el-divider direction="vertical"></el-divider>
           <el-link @click="activeLogin(recruit)">我要招聘</el-link>
           <el-divider direction="vertical"></el-divider>
@@ -41,19 +41,19 @@
               欢迎回来，求职者<i class="el-icon-arrow-down"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><el-link href="/applicant">个人中心</el-link></el-dropdown-item>
-              <el-dropdown-item><el-link href="/applicant/resume">我的简历</el-link></el-dropdown-item>
-              <el-dropdown-item><el-link href="/applicant/apply">投递情况</el-link></el-dropdown-item>
-              <el-dropdown-item><el-link href="/applicant/interview">我的面试</el-link></el-dropdown-item>
-              <el-dropdown-item><el-link href="/applicant/collect">职位收藏</el-link></el-dropdown-item>
-              <el-dropdown-item><el-link href="/applicant/setting">账号设置</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant')">个人中心</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant/resume')">我的简历</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant/apply')">投递情况</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant/interview')">我的面试</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant/collect')">职位收藏</el-link></el-dropdown-item>
+              <el-dropdown-item><el-link @click="redirect('/applicant/setting')">账号设置</el-link></el-dropdown-item>
               <el-dropdown-item><el-link @click="reloadStatus">退出登录</el-link></el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
         <!-- 用户操作: 招聘官身份-->
         <div v-if="$store.state.login_role === '1'" class="user-recruiter">
-          <el-link href="/recruiter/message"><i class="el-icon-lingdang"></i></el-link>
+          <el-link @click="redirect('/recruiter/message')"><i class="el-icon-lingdang"></i></el-link>
           <el-divider direction="vertical"></el-divider>
           <el-link @click="activeLogin(interview)">我要求职</el-link>
           <el-divider direction="vertical"></el-divider>
@@ -91,7 +91,7 @@ export default {
             type: Boolean,
             default: true
         },
-        isRecruiterRegister: {
+        isRegister: {
             type: Boolean,
             default: false
         }
@@ -111,7 +111,7 @@ export default {
     methods: {
         redirect(path) {
             // 刚注册的招聘官必须填写注册信息才可进行下一步
-            if(this.isRecruiterRegister){
+            if(this.isRegister){
                 return this.$message.info("请填写注册信息完成身份认证！");
             }
             this.$router.push(path);

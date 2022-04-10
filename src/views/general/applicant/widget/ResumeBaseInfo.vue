@@ -4,8 +4,13 @@
         <el-empty :image-size="200"></el-empty>
       </div>
       <div class="basic-info" v-else-if="!editResume">
-        <img :src="resume.applicant_avatar" :alt="resume.applicant_name"
-             style="width: 100px; height: 100px; border-radius: 50%"/>
+        <el-button type="text" class="img-btn" @click="uploadVisible = true">
+          <img v-if="resume.applicant_avatar" :src="resume.applicant_avatar" :alt="resume.applicant_name"
+               style="width: 100px; height: 100px; border-radius: 50%"/>
+          <img v-else :src="require('@/image/avatar/boy-1.png')" :alt="resume.applicant_name"
+               style="width: 100px; height: 100px; border-radius: 50%"/>
+        </el-button>
+        <UploadAvatar :visible.sync="uploadVisible" @update:data="initData"></UploadAvatar>
         <div class="applicant-info">
           <h1>{{ resume.applicant_name }}<span data-html2canvas-ignore="true" @click="toggleEdit('editResume',resume,resumeForm)"><i class="el-icon-edit"></i>编辑</span></h1>
           <p class="applicant-base">
@@ -94,9 +99,10 @@
 
 <script>
     import CityDialog from "@/components/CityDialog";
+    import UploadAvatar from "@/components/UploadAvatar";
     export default {
         name: "ResumeBaseInfo",
-        components: { CityDialog},
+        components: { CityDialog, UploadAvatar},
         props: {
             resume_id: {
                 type: String,
@@ -173,10 +179,13 @@
                         { required: true, message: "请输入当前所在城市", trigger: ['blur','change']}
                     ]
                 },
-                //基本信息 编辑框
+                // 基本信息 编辑框
                 editResume: false,
                 
-                dialogVisible: false
+                // 城市选择框
+                dialogVisible: false,
+                // 头像选择框
+                uploadVisible: false
             }
         },
         computed: {
@@ -186,7 +195,7 @@
                     range.push(i);
                 }
                 return range;
-            },
+            }
         },
         created() {
             // console.log(this.resume_id);
@@ -200,9 +209,13 @@
                 });
                 console.log(res);
                 if(res.msg === 'success'){
-                    res.data.resume.applicant_avatar = require( "@/image/avatar/" + res.data.resume.applicant_avatar);
+                    if (res.data.resume.applicant_avatar){
+                        res.data.resume.applicant_avatar = require( "@/image/avatar/" + res.data.resume.applicant_avatar);
+                    }
                     this.resume = Object.assign({},{},res.data.resume);
                 }
+                // 获取完数据告知父组件已更新完毕,用于预览简历的异步通知
+                this.$emit("updatePart:resume", 1)
             },
             // 切换为编辑框
             editOpen(editDialog){
@@ -233,11 +246,7 @@
                         });
                         console.log(res);
                         if(res.msg === 'success'){
-                            for (const [key, value] of Object.entries(res.data.resume)) {
-                                if(value){
-                                    this.$set(this.resume,key,value);
-                                }
-                            }
+                            await this.initData();
                         }
                         this.$message.success("保存成功");
                         this.resetForm(formName,editDialog);
@@ -352,7 +361,7 @@
                 }
             }
         }
-        img{
+        .img-btn{
             float: left;
         }
         .applicant-info{
@@ -373,6 +382,20 @@
                 i{
                     margin-right: 8px;
                 }
+            }
+        }
+    }
+    .image-occupation{
+        i{
+            color: #dcdfe6;
+            font-size: 64px;
+            width: 80px;
+            height: 80px;
+            border:1px solid #dcdfe6;
+            border-radius: 50%;
+            &::before{
+                display: block;
+                transform: translateY(4px);
             }
         }
     }

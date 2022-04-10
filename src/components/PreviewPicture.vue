@@ -6,7 +6,9 @@
             :url-list="[resumeImg]"
             :on-close="closeViewer"/>
       <!-- 绝对定位隐藏 -->
-      <Resume v-if="previewResume" :applicant_id="applicant_id" ref="resume" style="position: absolute; top: -100%; transform: translateY(-100%)"/>
+      <Resume v-if="previewResume" :applicant_id="applicant_id"
+              ref="resume" @completeUpdate:resume="resumePreview"
+              style="position: absolute; top: -100%; transform: translateY(-100%)"/>
       <!-- 绝对定位隐藏 -->
       <ProfessionDetail v-if="previewProfession" ref="profession" style="position: absolute; top: -100%; transform: translateY(-100%)"/>
     </div>
@@ -47,7 +49,7 @@
         },
         mounted() {
             // console.log(this.preview)
-            this.resumePreview();
+            // this.resumePreview();
         },
         destroyed() {
             this.$store.commit("recoverOnlyReadResume");
@@ -57,35 +59,39 @@
                 previewDialogVisible: this.preview,
                 previewResume: this.isResume,
                 previewProfession: this.isProfession,
-                resumeImg: ""
+                resumeImg: "",
             }
         },
         methods: {
             // 简历预览
-            resumePreview() {
-                let obj = "";
-                if(this.isResume) {
-                    obj = this.$refs.resume.$el;
-                }
-                if(this.isProfession) {
-                    obj = this.$refs.profession.$el;
-                }
-                html2canvas(obj, {
-                    background: null,
-                    // width: 972
-                }).then((canvas) => {
-                    console.log(canvas);
-                    // 截图成功后销毁组件
-                    // this.previewResume = false;
-                    // this.previewProfession = false;
-                    //将canvas转为base64格式
-                    // const imgUrl = canvas.toDataURL("image/png");
-                    // console.log(imgUrl);
-                    this.resumeImg = canvas.toDataURL("image/png");
-                });
+            resumePreview(isComplete) {
+                if(isComplete){
+                    let obj = "";
+                    if(this.isResume) {
+                        obj = this.$refs.resume.$el;
+                    }
+                    if(this.isProfession) {
+                        obj = this.$refs.profession.$el;
+                    }
+                    this.$nextTick(() => {
+                        html2canvas(obj, {
+                            background: null,
+                            // width: 972
+                        }).then((canvas) => {
+                            console.log(canvas);
+                            // 截图成功后销毁组件
+                            // this.previewResume = false;
+                            // this.previewProfession = false;
+                            //将canvas转为base64格式
+                            // const imgUrl = canvas.toDataURL("image/png");
+                            // console.log(imgUrl);
+                            this.resumeImg = canvas.toDataURL("image/png");
+                        });
 
-                this.stopMove();
-                this.$emit("update:preview", true);
+                        this.stopMove();
+                        this.$emit("update:preview", true);
+                    })
+                }
             },
             // 停止页面滚动
             stopMove () {

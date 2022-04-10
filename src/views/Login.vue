@@ -306,16 +306,14 @@ export default {
                             window.localStorage.setItem("login_id", res.data.login_id);
                             window.localStorage.setItem("login_role", res.data.login_role);
                             this.$store.commit("setLogin");
-                            // 招聘官要验证是否为刚注册用户，若是，则跳转注册信息页
-                            if(login_role === "1") {
-                                const res = await this.$axios.request({
-                                    url: `/recruiter/info/${this.$store.state.login_id}`,
-                                    method: "get"
-                                });
-                                console.log(res);
-                                if(res.msg !== "success" || !res.data){
-                                    return this.$router.push("/register");
-                                }
+                            // 验证用户是否未填写注册信息，若是，则跳转注册信息页
+                            const validRes = await this.$axios.request({
+                                url: `/login/validate/${this.$store.state.login_id}/${this.$store.state.login_role}`,
+                                method: "get"
+                            });
+                            console.log(validRes);
+                            if(!validRes.data.isCompleteRegister) {
+                                return this.$router.push("/register");
                             }
                         }
                         else {

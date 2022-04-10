@@ -181,7 +181,10 @@
       <!-- 底部信息栏 -->
       <GeneralFooter />
       
-      <PreviewPicture v-if="previewVisible" :preview.sync="previewVisible" :isResume="true" :applicant_id="applicant.applicant_id"/>
+      <PreviewPicture v-if="previewVisible && applicant.applicant_id"
+                      :preview.sync="previewVisible" :isResume="true"
+                      :applicant_id="applicant.applicant_id"
+      />
     </div>
 </template>
 

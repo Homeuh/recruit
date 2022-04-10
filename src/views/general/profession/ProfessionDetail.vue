@@ -157,7 +157,7 @@ export default {
     components: { GeneralTopBar, GeneralFooter, Map, InterviewEvaluation},
     data() {
         return {
-            jobData: [],
+            jobData: {},
             /*jobData: {
                 job_duty: "前端开发工程师",
                 job_salary: "10-15K",
@@ -227,7 +227,7 @@ export default {
                     create_date: "2022-3-12"
                 }
             ],
-            company: [],
+            company: {},
             /*company: {
                 company_name: "迅雷网络",
                 company_logo: require("@/image/company/xunlei.jpg"),
@@ -291,14 +291,18 @@ export default {
             if(res.msg === 'success'){
                 res.data.jobData.recruiter_avatar = require("@/image/avatar/" + res.data.jobData.recruiter_avatar);
                 res.data.jobData.job_tag = res.data.jobData.job_tag.split(",");
-                this.jobData = res.data.jobData;
+                this.jobData = Object.assign({},{},res.data.jobData);
                 
                 res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
-                this.company = res.data.company;
+                this.company = Object.assign({},{},res.data.company);
             }
         },
         collect() {
-            this.isCollect = !this.isCollect;
+            if(this.$store.state.login_role === "0") {
+                this.isCollect = !this.isCollect;
+            } else {
+                this.$message.error("请先登录")
+            }
         },
         apply() {
             this.isApply = !this.isApply;

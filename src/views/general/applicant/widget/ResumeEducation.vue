@@ -216,6 +216,8 @@
                 if(res.msg === 'success'){
                     this.educationList = Object.assign([],[],res.data.educationList);
                 }
+                // 获取完数据告知父组件已更新完毕,用于预览简历的异步通知
+                this.$emit("updatePart:resume", 1)
             },
             // 切换为编辑框
             editOpen(editDialog){
