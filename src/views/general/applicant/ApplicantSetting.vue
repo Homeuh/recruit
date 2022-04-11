@@ -77,7 +77,7 @@
             <el-form-item label="登录手机" prop="login_phone">
               <el-input placeholder="请输入当前登录手机号码" v-model="phoneForm.login_phone"></el-input>
             </el-form-item>
-            <el-form-item label="密码验证" prop="password">
+            <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
               <el-input placeholder="请输入当前账号登录密码" v-model="phoneForm.password"></el-input>
             </el-form-item>
             <el-form-item label="新的手机" prop="newPhone">
@@ -96,7 +96,7 @@
           :visible.sync="passwordDialogVisible"
           width="30%">
       <el-form :model="passwordForm" :rules="passwordRules" ref="passwordForm" label-width="84px">
-        <el-form-item label="旧密码" prop="password" v-if="this.loginForm.password">
+        <el-form-item label="旧密码" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入旧密码" v-model="passwordForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
@@ -121,7 +121,7 @@
         <el-form-item label="登录手机" prop="login_phone">
           <el-input placeholder="请输入当前登录手机号码" v-model="wechatForm.login_phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码验证" prop="password">
+        <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入当前账号登录密码" v-model="wechatForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新的微信" prop="newWechat">
@@ -143,7 +143,7 @@
         <el-form-item label="登录手机" prop="login_phone">
           <el-input placeholder="请输入当前登录手机号码" v-model="emailForm.login_phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码验证" prop="password">
+        <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入当前账号登录密码" v-model="emailForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新的邮箱" prop="newEmail">
@@ -241,12 +241,13 @@
                     { icon: "el-icon-shezhi", name: "账号设置", href: "/applicant/setting"}
                 ],
                 currentMenu: "账号设置",
-                loginForm: {
+                loginForm: {},
+                /*loginForm: {
                     login_phone: "13522342234",
                     password: "12345678",
                     applicant_wechat: "Homeuh",
                     applicant_email: "850609866@qq.com"
-                },
+                },*/
                 
                 // 更换手机
                 phoneForm: {
@@ -325,7 +326,74 @@
                 emailDialogVisible: false,
             }
         },
+        created() {
+            this.$store.commit("setLogin");
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: "/applicant/setting/" + this.$store.state.login_id,
+                    method: "get"
+                })
+                console.log(res)
+                if (res.msg === "success") {
+                    this.loginForm = Object.assign({},{},res.data.loginForm);
+                }
+            },
+            async postForm(formName) {
+                let res;
+                switch(formName){
+                    case "phoneForm":
+                        res = await this.$axios.request({
+                            url: "/login/updatePhone",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newPhone: this[formName].newPhone
+                            }
+                        });
+                        console.log(res);
+                        await this.initData();
+                        break;
+                    case "passwordForm":
+                        res = await this.$axios.request({
+                            url: "/login/updatePass",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newPass: this[formName].newPassword
+                            }
+                        });
+                        console.log(res);
+                        await this.initData();
+                        break;
+                    case "wechatForm":
+                        res = await this.$axios.request({
+                            url: "/applicant/updateWechat",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newWechat: this[formName].newWechat
+                            }
+                        });
+                        console.log(res);
+                        await this.initData();
+                        break;
+                    case "emailForm":
+                        res = await this.$axios.request({
+                            url: "/applicant/updateEmail",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newEmail: this[formName].newEmail
+                            }
+                        });
+                        console.log(res);
+                        await this.initData();
+                        break;
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
@@ -345,6 +413,7 @@
             submitForm(formName, editDialog) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.postForm(formName);
                         this.$message.success("更换成功");
                         this.resetForm(formName, editDialog);
                     } else {
@@ -357,7 +426,8 @@
             resetForm(formName, editDialog) {
                 this.$refs[formName].resetFields();
                 this.editOpen(editDialog);
-            }
+            },
+
         },
     }
 </script>

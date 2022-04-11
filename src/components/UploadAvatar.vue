@@ -35,11 +35,20 @@
             visible: {
                 type: Boolean,
                 default: false,
+            },
+            avatar: {
+                type: String,
+                default: "",
+            },
+            // 是否选中后立即上传，作为注册时和修改时的选择
+            uploadDirectly: {
+                type: Boolean,
+                default: false,
             }
         },
         data() {
             return {
-                selectedAvatar: "",
+                selectedAvatar: this.avatar,
                 file: "",
                 defaultAvatar: [
                     { url: require("@/image/avatar/boy-1.png"), name: "boy-1.png"},
@@ -55,19 +64,31 @@
             visibleSync(event) {
                 this.$emit('update:visible', event);
             },
+            // 上传默认头像
             async changeAvatar(avatarName) {
                 // console.log(avatarName);
-                const res = await this.$axios.request({
-                    url: `/applicant/uploadDefault?avatarName=${avatarName}&login_id=${this.$store.state.login_id}`,
-                    method: "post"
-                })
-                console.log(res);
-                if(res.msg === "success"){
-                    this.$message.success("上传成功");
+                if(this.uploadDirectly){
+                    const res = await this.$axios.request({
+                        url: `/applicant/uploadDefault?avatarName=${avatarName}&login_id=${this.$store.state.login_id}`,
+                        method: "post"
+                    })
+                    console.log(res);
+                    if(res.msg === "success"){
+                        this.$message.success("上传成功");
+                        this.$emit('update:visible', false);
+                        this.$emit("update:data", true);
+                    }
+                } else {
+                    // 告诉父组件选择的是默认头像
+                    this.$emit("is-default", true);
+                    // 回调传递默认头像名称（数据库表存储）
+                    this.$emit("update:avatarName", avatarName);
+                    // 回调修改头像路径
+                    this.$emit("update:avatar", require("@/image/avatar/" + avatarName));
                     this.$emit('update:visible', false);
-                    this.$emit("update:data", true);
                 }
             },
+            // 获取formData数据
             getFile(event) {
                 let fileObj = event.target.files[0]
                 if (window.createObjcectURL !== undefined) {
@@ -82,20 +103,29 @@
                 data.append("file", fileObj);
                 this.file = data;
             },
+            // 头像上传提交
             async submit() {
                 console.log(this.file.get("file"))
-                const res = await this.$axios.request({
-                    url: `/applicant/upload/${this.$store.state.login_id}`,
-                    method: "post",
-                    data: this.file
-                })
-                console.log(res)
-                if(res.msg === "success"){
-                    this.$message.success("上传成功");
+                if(this.uploadDirectly){
+                    const res = await this.$axios.request({
+                        url: `/applicant/upload/${this.$store.state.login_id}`,
+                        method: "post",
+                        data: this.file
+                    })
+                    console.log(res)
+                    if(res.msg === "success"){
+                        this.$message.success("上传成功");
+                        this.$emit('update:visible', false);
+                        this.$emit("update:data", true);
+                    }
+                } else {
+                    // 如果是选择的自定义头像，向父组件传递头像文件
+                    this.$emit("update:avatarFile", this.file);
+                    this.$emit("update:avatar", this.selectedAvatar);
                     this.$emit('update:visible', false);
-                    this.$emit("update:data", true);
                 }
             },
+            // 用户上传框点击
             userUpload() {
                 document.getElementById('avatar-box').click()
             }

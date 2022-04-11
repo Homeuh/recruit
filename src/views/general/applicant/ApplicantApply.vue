@@ -18,7 +18,7 @@
           <nav>
             <div :class="['nav-tab',{'nav-selected': currentNav === nav}]"
                  v-for="(nav,index) in navList" :key="nav + index"
-                 @click="navSelect(nav)"
+                 @click="navSelect(nav,index)"
             >{{ nav }}
             </div>
           </nav>
@@ -59,12 +59,12 @@
                 </div>
                 <div class="apply-status">
                   <span>投递时间：{{ apply.create_date }}</span>
-                  <span v-if="apply.apply_status === 0" style="color: #F56C6C">简历不合适</span>
-                  <span v-else-if="apply.apply_status === 1" style="color: #8d92a1">简历投递中~</span>
-                  <span v-else-if="apply.apply_status === 2" style="color: #00c2b3">简历被查看</span>
-                  <span v-else-if="apply.apply_status === 3" style="color: #E6A23C">公司感兴趣</span>
-                  <span v-else-if="apply.apply_status === 4" style="color: #00c2b3">收到面试邀请~</span>
-                  <span v-else-if="apply.apply_status === 5" style="color: #8d92a1">面试已结束</span>
+                  <span v-if="apply.apply_status === '0'" style="color: #F56C6C">简历不合适</span>
+                  <span v-else-if="apply.apply_status === '1'" style="color: #8d92a1">简历投递中~</span>
+                  <span v-else-if="apply.apply_status === '2'" style="color: #00c2b3">简历被查看</span>
+                  <span v-else-if="apply.apply_status === '3'" style="color: #E6A23C">公司感兴趣</span>
+                  <span v-else-if="apply.apply_status === '4'" style="color: #00c2b3">收到面试邀请~</span>
+                  <span v-else-if="apply.apply_status === '5'" style="color: #8d92a1">面试已结束</span>
                 </div>
               </li>
             </ul>
@@ -73,7 +73,7 @@
               <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page.sync="currentPage"
-                    :page-size="100"
+                    :page-size="pageSize"
                     background
                     layout="prev, pager, next"
                     :total="total">
@@ -108,7 +108,9 @@
                 currentMenu: "投递职位",
                 navList: ["全部","不合适","已投递","被查看","感兴趣","邀面试","已结束"],
                 currentNav: "全部",
-                applyList: [
+                applyList: [],
+                apply_status: "",
+                /*applyList: [
                     {
                         job_duty: "前端开发工程师",
                         job_salary: "12-24K·14薪",
@@ -277,21 +279,52 @@
                         create_date: "2022-3-21 18:45",
                         apply_status: 5
                     },
-                ],
+                ],*/
                 currentPage: 1,
+                pageSize: 1,
                 total: 1000,
             }
         },
+        created() {
+            this.initData();
+        },
         methods: {
+            async initData() {
+                const res = await this.$axios.request({
+                    url: `/apply/page`,
+                    method: "get",
+                    params: {
+                        currentPage: this.currentPage,
+                        pageSize: this.pageSize,
+                        apply_status: this.apply_status
+                    }
+                })
+                console.log(res);
+                if(res.msg === "success") {
+                    res.data.applyList.forEach(item => {
+                        item.company_logo = require("@/image/company/" + item.company_logo);
+                    });
+                    this.total = res.data.total;
+                    this.applyList = Object.assign([], [], res.data.applyList);
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
-            navSelect(nav){
+            navSelect(nav,index){
                 this.currentNav = nav;
+                if(index === 0) {
+                    this.apply_status = "";
+                } else {
+                    this.apply_status = (index-1).toString();
+                }
+                this.currentPage = 1;
+                this.initData();
             },
             handleCurrentChange(value) {
-                console.log(value)
-                console.log(this.$route)
+                this.currentPage = value;
+                this.initData();
+                // console.log(value)
             }
         },
     }

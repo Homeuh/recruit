@@ -65,7 +65,7 @@
             </p>
             <p>
               <i class="el-icon-diqiu"></i>
-              <span>{{ company.company_website }}</span>
+              <span :title="company.company_website">{{ company.company_website }}</span>
             </p>
           </div>
           <div class="similar-position">
@@ -111,15 +111,19 @@
           <div class="job-introduce">
             <h3>职位描述</h3>
             <div class="content">
-              <h4>工作内容：</h4>
-              <!-- 过滤job_description -->
-              <p><span v-for="(des,index) in filter(jobData.job_description)" :key="des + index">{{ des }}</span></p>
-              <h4>岗位要求：</h4>
-              <p><span v-for="(req,index) in filter(jobData.job_requirement)" :key="req + index">{{ req }}</span></p>
-              <div v-if="jobData.job_benefit">
+              <template v-if="jobData.job_description">
+                <h4>工作内容：</h4>
+                <!-- 过滤job_description -->
+                <p><span v-for="(des,index) in filter(jobData.job_description)" :key="des + index">{{ des }}</span></p>
+              </template>
+              <template v-if="jobData.job_requirement">
+                <h4>岗位要求：</h4>
+                <p><span v-for="(req,index) in filter(jobData.job_requirement)" :key="req + index">{{ req }}</span></p>
+              </template>
+              <template v-if="jobData.job_benefit">
                 <h4>薪酬福利：</h4>
                 <p><span v-for="(ben,index) in filter(jobData.job_benefit)" :key="ben + index">{{ ben }}</span></p>
-              </div>
+              </template>
             </div>
           </div>
           <div class="job-attached" v-if="jobData.attached_info">
@@ -134,7 +138,7 @@
               <p><span v-for="(int,index) in filter(jobData.interview_info)" :key="int + index">{{ int }}</span></p>
             </div>
           </div>
-          <div class="office-address">
+          <div class="office-address" v-if="jobData.office_address">
             <h3>工作地点</h3>
               <Map :address="jobData.office_address"/>
           </div>
@@ -277,8 +281,10 @@ export default {
             isApply: false
         }
     },
-    created() {
-        this.initData()
+    async created() {
+        this.$store.commit("setLogin");
+        await this.initData();
+        await this.judgeApply();
     },
     methods: {
         async initData() {
@@ -304,8 +310,55 @@ export default {
                 this.$message.error("请先登录")
             }
         },
-        apply() {
-            this.isApply = !this.isApply;
+        async judgeApply() {
+            // 判断是否已投递
+            const res = await this.$axios.request({
+                url: `/apply/info/${this.$store.state.login_id}/${this.jobData.job_id}`,
+                method: "get",
+            })
+            console.log(res);
+            if(res.data.applyCount === 1){
+                this.isApply = true;
+            }
+        },
+        async apply() {
+            if(!this.$store.state.login_id){
+                return this.$message.error("当前状态尚未登录，请先注册登录完善信息！")
+            }
+            else if(this.$store.state.login_role !== "0") {
+                return this.$message.error("角色身份不符，请切换为求职者身份！")
+            }
+            else {
+                // 未投递
+                if(!this.isApply) {
+                    const validReusme = await this.$axios.request({
+                        url: `/applicant/info/${this.$store.state.login_id}`,
+                        method: "get",
+                    })
+                    console.log(validReusme);
+                    if(validReusme.data.applicant.resume_percent <= 60) {
+                        this.$message.info("您的简历尚未完善！");
+                    }
+                    const res = await this.$axios.request({
+                        url: `/apply/saveOrUpdate?login_id=${this.$store.state.login_id}&job_id=${this.jobData.job_id}`,
+                        method: "post",
+                    })
+                    console.log(res)
+                    this.$message.success("投递成功");
+                } else { // 已投递
+                    const res = await this.$axios.request({
+                        url: `/apply/delete?login_id=${this.$store.state.login_id}&job_id=${this.jobData.job_id}`,
+                        method: "delete",
+                    })
+                    console.log(res)
+                    if(res.data === "删除成功") {
+                        this.$message.success("投递已取消");
+                    } else {
+                        return this.$message.error("投递取消失败");
+                    }
+                }
+                this.isApply = !this.isApply;
+            }
         },
         filter(data) {
             return data.split("\n");
@@ -508,8 +561,13 @@ main{
                         margin-left: 12px;
                     }
                     span{
+                        display: inline-block;
                         position: relative;
                         bottom: 2px;
+                        max-width: 210px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                     }
                 }
             }

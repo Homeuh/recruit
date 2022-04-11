@@ -10,7 +10,7 @@
           <img v-else :src="require('@/image/avatar/boy-1.png')" :alt="resume.applicant_name"
                style="width: 100px; height: 100px; border-radius: 50%"/>
         </el-button>
-        <UploadAvatar :visible.sync="uploadVisible" @update:data="initData"></UploadAvatar>
+        <UploadAvatar :visible.sync="uploadVisible" :uploadDirectly="true" @update:data="initData"></UploadAvatar>
         <div class="applicant-info">
           <h1>{{ resume.applicant_name }}<span data-html2canvas-ignore="true" @click="toggleEdit('editResume',resume,resumeForm)"><i class="el-icon-edit"></i>编辑</span></h1>
           <p class="applicant-base">

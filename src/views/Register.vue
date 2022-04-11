@@ -7,6 +7,21 @@
           <div class="register">
             <h1>完善个人基本信息</h1>
             <el-form class="applicant-form" :model="resumeForm" :rules="resumeRules" ref="resumeForm" label-width="160px">
+              <el-form-item label="头像" prop="applicant_avatar">
+                <el-button type="text" @click="uploadVisible = true">
+                  <img v-if="resumeForm.applicant_avatar" :src="resumeForm.applicant_avatar"
+                       style="width: 80px; height: 80px; border-radius: 50%"/>
+                  <span class="image-occupation" v-else>
+                    <i class="el-icon-s-custom"></i>
+                  </span>
+                </el-button>
+                <UploadAvatar :visible.sync="uploadVisible"
+                              :avatar.sync="resumeForm.applicant_avatar"
+                              @is-default="isDefaultAvatar = $event"
+                              :avatarName.sync="avatarName"
+                              :avatarFile.sync="avatarFile">
+                </UploadAvatar>
+              </el-form-item>
               <el-form-item label="姓名" prop="applicant_name">
                 <el-input v-model="resumeForm.applicant_name" placeholder="请填写你的真实姓名"></el-input>
               </el-form-item>
@@ -270,6 +285,7 @@
     import CityDialog from "../components/CityDialog";
     import Address from "@/components/Address";
     import Editor from "@/components/Editor";
+    import UploadAvatar from "@/components/UploadAvatar";
     export default {
         name: "Register",
         components: {
@@ -277,7 +293,8 @@
             GeneralFooter,
             CityDialog,
             Address,
-            Editor
+            Editor,
+            UploadAvatar,
         },
         watch: {
             active: function(newVal) {
@@ -404,6 +421,7 @@
 
                 resumeForm: {
                     login_id: this.$store.state.login_id,
+                    applicant_avatar:"",
                     applicant_name: "",
                     applicant_sex: "",
                     applicant_age: "",
@@ -415,6 +433,9 @@
                     applicant_city: ""
                 },
                 resumeRules: {
+                    applicant_avatar: [
+                      { required: true, message: "请上传头像", trigger: 'change'}
+                    ],
                     applicant_name: [
                         { required: true, message: "请输入姓名", trigger: 'blur'},
                         { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
@@ -446,7 +467,15 @@
                     ]
                 },
                 
-                dialogVisible: false
+                dialogVisible: false,
+
+                uploadVisible: false,
+                // 是否选择的是默认头像
+                isDefaultAvatar: false,
+                // 如果是默认头像，设置变量接收头像名称（数据库表存储）
+                avatarName: "",
+                // 如果是自定义头像，设置变量接收头像文件
+                avatarFile: "",
             }
         },
         computed: {
@@ -458,7 +487,11 @@
                 return range;
             },
         },
+        created() {
+            this.$store.commit("setLogin");
+        },
         methods: {
+            // 表单统一提交方式封装
             async postForm(options) {
                 const requestArr = [];
                 await options.forEach(opt => {
@@ -512,7 +545,9 @@
                                 url: "/applicant/saveOrUpdate",
                                 method: "post",
                                 data: this.resumeForm
-                            }]);
+                            }]).then(() => {
+                                this.changeAvatar("resumeForm");
+                            });
                         }
                         else if (formName === 'companyForm') {
                             this.$message.success("公司新建成功，请尽快发布你的第一个职位吧!");
@@ -528,6 +563,24 @@
                         return false;
                     }
                 });
+            },
+            changeAvatar(formName) {
+                switch(formName) {
+                    case "resumeForm":
+                      if(this.isDefaultAvatar){
+                          this.postForm([{
+                              url: `/applicant/uploadDefault?avatarName=${this.avatarName}&login_id=${this.$store.state.login_id}`,
+                              method: "post"
+                          }])
+                      } else {
+                          this.postForm([{
+                              url: `/applicant/upload/${this.$store.state.login_id}`,
+                              method: "post",
+                              data: this.avatarFile
+                          }])
+                      }
+                      break;
+                }
             }
         },
     }
@@ -620,20 +673,6 @@
                                         width: 180px;
                                     }
                                 }
-                            }
-                        }
-                    }
-                    .image-occupation{
-                        i{
-                            color: #dcdfe6;
-                            font-size: 64px;
-                            width: 80px;
-                            height: 80px;
-                            border:1px solid #dcdfe6;
-                            border-radius: 50%;
-                            &::before{
-                                display: block;
-                                transform: translateY(4px);
                             }
                         }
                     }
@@ -739,5 +778,20 @@
         width: 178px;
         height: 178px;
         display: block;
+    }
+
+    .image-occupation{
+        i{
+            color: #dcdfe6;
+            font-size: 64px;
+            width: 80px;
+            height: 80px;
+            border:1px solid #dcdfe6;
+            border-radius: 50%;
+            &::before{
+                display: block;
+                transform: translateY(4px);
+            }
+        }
     }
 </style>
