@@ -286,6 +286,7 @@
             }
         },
         created() {
+            this.$store.commit("setLogin");
             this.initData();
         },
         methods: {
@@ -296,7 +297,8 @@
                     params: {
                         currentPage: this.currentPage,
                         pageSize: this.pageSize,
-                        apply_status: this.apply_status
+                        apply_status: this.apply_status,
+                        login_id: this.$store.state.login_id
                     }
                 })
                 console.log(res);

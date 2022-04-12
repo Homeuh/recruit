@@ -1,11 +1,11 @@
 <template>
     <el-dialog
           class="upload-avatar"
-          title="请选择头像并上传"
+          :title="title"
           :visible="visible" @update:visible="visibleSync"
           width="30%">
       <div class="ready-upload" v-if="!selectedAvatar">
-        <div class="default-avatar">
+        <div class="default-avatar" v-if="isAvatar">
           <img v-for="(avatar,index) in defaultAvatar" :key="avatar.name + index"
                :src="avatar.url" :alt="avatar.name" :title="avatar.name"
                style="width: 80px; height: 80px; border-radius: 50%; cursor: pointer"
@@ -17,7 +17,9 @@
                hidden
         />
         <div class="upload-wrapper" @click="userUpload">
-          <div>&nbsp;+&nbsp;点击上传头像</div>
+          <slot name="body-notice">
+            <div>&nbsp;+&nbsp;点击上传头像</div>
+          </slot>
           <div>仅支持JPG、PNG、JPEG格式</div>
         </div>
       </div>
@@ -36,6 +38,21 @@
                 type: Boolean,
                 default: false,
             },
+            title: {
+                type: String,
+                default: "请选择头像并上传"
+            },
+            // 接口对应表名：求职者->applicant，招聘官->recruiter，公司->company（有logo和营业执照，暂时不写）
+            tablePath: {
+                type: String,
+                default: "applicant"
+            },
+            // 默认是头像上传
+            isAvatar: {
+                type: Boolean,
+                default: true,
+            },
+            // 接收变量
             avatar: {
                 type: String,
                 default: "",
@@ -69,7 +86,7 @@
                 // console.log(avatarName);
                 if(this.uploadDirectly){
                     const res = await this.$axios.request({
-                        url: `/applicant/uploadDefault?avatarName=${avatarName}&login_id=${this.$store.state.login_id}`,
+                        url: `/${this.tablePath}/uploadDefault?avatarName=${avatarName}&login_id=${this.$store.state.login_id}`,
                         method: "post"
                     })
                     console.log(res);
@@ -108,7 +125,7 @@
                 console.log(this.file.get("file"))
                 if(this.uploadDirectly){
                     const res = await this.$axios.request({
-                        url: `/applicant/upload/${this.$store.state.login_id}`,
+                        url: `/${this.tablePath}/upload/${this.$store.state.login_id}`,
                         method: "post",
                         data: this.file
                     })
@@ -121,6 +138,7 @@
                 } else {
                     // 如果是选择的自定义头像，向父组件传递头像文件
                     this.$emit("update:avatarFile", this.file);
+                    // 回调修改头像路径
                     this.$emit("update:avatar", this.selectedAvatar);
                     this.$emit('update:visible', false);
                 }

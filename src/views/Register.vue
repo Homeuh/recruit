@@ -103,13 +103,19 @@
               <div class="register-wrapper" v-if="active === 0" :key="active">
                 <el-form :model="recruiterForm" :rules="recruiterFormRules" ref="recruiterForm" label-width="120px">
                   <el-form-item label="头像" prop="recruiter_avatar">
-                    <el-button type="text">
+                    <el-button type="text" @click="uploadVisible = true">
                       <img v-if="recruiterForm.recruiter_avatar" :src="recruiterForm.recruiter_avatar"
                            style="width: 80px; height: 80px; border-radius: 50%"/>
                       <span class="image-occupation" v-else>
                         <i class="el-icon-s-custom"></i>
                       </span>
                     </el-button>
+                    <UploadAvatar :visible.sync="uploadVisible"
+                                  :avatar.sync="recruiterForm.recruiter_avatar"
+                                  @is-default="isDefaultAvatar = $event"
+                                  :avatarName.sync="avatarName"
+                                  :avatarFile.sync="avatarFile">
+                    </UploadAvatar>
                   </el-form-item>
                   <el-form-item label="姓名" prop="recruiter_name">
                     <el-input v-model="recruiterForm.recruiter_name" placeholder="请填写你工作中的姓名，用于向求职者展示"></el-input>
@@ -150,15 +156,22 @@
                     <el-input v-model="companyForm.company_name" placeholder="请填写公司的简称，例如：腾讯是深圳市腾讯计算机系统有限公司的简称"></el-input>
                   </el-form-item>
                   <el-form-item label="公司logo" prop="company_logo">
-                    <el-upload
-                          class="avatar-uploader"
-                          action="https://jsonplaceholder.typicode.com/posts/"
-                          :show-file-list="false"
-                          :on-success="handleAvatarSuccess"
-                          :before-upload="beforeAvatarUpload">
-                      <img v-if="companyForm.company_logo" :src="companyForm.company_logo" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
+                    <el-button type="text" @click="uploadLogoVisible=true">
+                      <div class="upload-wrapper">
+                        <img v-if="companyForm.company_logo" :src="companyForm.company_logo" :alt="company.company_name"
+                             style="display:block; width: 178px; height: 178px; border-radius: 6px;"/>
+                        <i v-else class="el-icon-plus"></i>
+                      </div>
+                    </el-button>
+                    <UploadAvatar :visible.sync="uploadLogoVisible"
+                                  title="请选择公司logo并上传"
+                                  :is-avatar="false"
+                                  :avatar.sync="companyForm.company_logo"
+                                  :avatarFile.sync="avatarFile">
+                      <template v-slot:body-notice>
+                        <div>&nbsp;+&nbsp;点击上传公司logo</div>
+                      </template>
+                    </UploadAvatar>
                   </el-form-item>
                   <el-form-item label="公司行业" prop="company_tag">
                     <el-select v-model="companyForm.company_tag" placeholder="请选择行业类型" :popper-append-to-body="false">
@@ -211,15 +224,22 @@
                     <el-input v-model="companyForm.company_website" placeholder="请填写公司的网站链接"></el-input>
                   </el-form-item>
                   <el-form-item label="营业执照" prop="business_license">
-                    <el-upload
-                          class="avatar-uploader"
-                          action="https://jsonplaceholder.typicode.com/posts/"
-                          :show-file-list="false"
-                          :on-success="handleAvatarSuccess"
-                          :before-upload="beforeAvatarUpload">
-                      <img v-if="companyForm.business_license" :src="companyForm.business_license" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
+                    <el-button type="text" @click="uploadLicenseVisible=true">
+                      <div class="upload-wrapper">
+                        <img v-if="companyForm.business_license" :src="companyForm.business_license" :alt="company.company_name"
+                             style="display:block; width: 178px; height: 178px; border-radius: 6px;"/>
+                        <i v-else class="el-icon-plus"></i>
+                      </div>
+                    </el-button>
+                    <UploadAvatar :visible.sync="uploadLicenseVisible"
+                                  title="请选择公司营业执照并上传"
+                                  :is-avatar="false"
+                                  :avatar.sync="companyForm.business_license"
+                                  :avatarFile.sync="logoFile">
+                      <template v-slot:body-notice>
+                        <div>&nbsp;+&nbsp;点击上传公司营业执照</div>
+                      </template>
+                    </UploadAvatar>
                   </el-form-item>
                   <el-form-item class="edit-btn">
                     <el-button type="primary" class="register-btn" @click="submitForm('companyForm')">注册公司</el-button>
@@ -298,10 +318,11 @@
         },
         watch: {
             active: function(newVal) {
-                if(newVal === 1){
-                    // 查询是否公司已注册（是否存在唯一会员码）,
-                    // this.hasMemberCode = true;
+                // 查询是否公司已注册（是否存在唯一会员码）
+                if(newVal === 1 && Object.keys(this.company).length === 0){
                     this.companyForm.company_full_name = this.recruiterForm.company_full_name
+                } else {
+                    this.hasMemberCode = true;
                 }
             }
         },
@@ -320,13 +341,14 @@
             return {
                 active: 0,
                 hasMemberCode: false,
-                company: {
+                company: {},
+                /*company: {
                     company_full_name: "北京三快科技有限公司",
                     company_name: "美团",
                     company_logo: require("@/image/company/meituan.jpg"),
                     company_tag: "工具类产品",
                     company_type: "合资",
-                },
+                },*/
                 companyMemberForm: {
                     member_code: ""
                 },
@@ -337,7 +359,8 @@
                 },
                 
                 recruiterForm: {
-                    recruiter_avatar: require("@/image/avatar/recruiter_chen.png"),
+                    login_id: this.$store.state.login_id,
+                    recruiter_avatar: "",
                     recruiter_name: "",
                     recruiter_sex: "",
                     recruiter_duty: "",
@@ -397,7 +420,7 @@
                         { required: true, message: "此项不能为空", trigger: 'change'}
                     ],
                     company_address: [
-                        { required: true, message: "此项不能为空", trigger: 'change'}
+                        { required: true, message: "此项不能为空", trigger: ['blur','change']}
                     ],
                     company_size: [
                         { required: true, message: "此项不能为空", trigger: 'change'}
@@ -469,13 +492,21 @@
                 
                 dialogVisible: false,
 
+                //求职者注册upload可视
                 uploadVisible: false,
+                //招聘官注册upload可视
+                uploadLogoVisible: false,
                 // 是否选择的是默认头像
                 isDefaultAvatar: false,
                 // 如果是默认头像，设置变量接收头像名称（数据库表存储）
                 avatarName: "",
                 // 如果是自定义头像，设置变量接收头像文件
                 avatarFile: "",
+
+
+                uploadLicenseVisible: false,
+                // 如果是自定义logo，设置变量接收logo文件
+                logoFile: "",
             }
         },
         computed: {
@@ -510,37 +541,37 @@
                             successNum += item.code === 200 ? 1 : 0;
                         })
                         if (successNum === value.length){
-                            this.$message.success("基本信息提交成功");
+                            this.$message.success("信息提交成功");
                             this.$router.push("/home");
                         } else {
-                            this.$message.error("基本信息提交失败，请联系管理员审查");
+                            this.$message.error("信息提交失败，请联系管理员审查");
                         }
                     })
                     .catch(reason => {
                         console.log(reason);
-                        this.$message.error("基本信息提交失败，请联系管理员审查");
+                        this.$message.error("信息提交失败，请联系管理员审查");
                     });
             },
-            handleAvatarSuccess(res, file) {
-                this.companyForm.company_logo = URL.createObjectURL(file.raw);
-            },
-            beforeAvatarUpload(file) {
-                console.log(file)
-                const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
-                const isLt2M = file.size / 1024 / 1024 < 2;
-
-                if (!isJPG) {
-                    this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');
+            // 查找公司是否已注册，已注册则填写公司唯一会员码注册成为招聘官，未注册需要完成公司注册
+            async getCompanyInfo() {
+                const res = await this.$axios.request({
+                    url: "/company/getCompanyInfo",
+                    method: "get",
+                    params: {
+                        company_full_name: this.recruiterForm.company_full_name
+                    }
+                });
+                if (res.msg === "success") {
+                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                    this.company = Object.assign({},{},res.data.company);
                 }
-                if (!isLt2M) {
-                    this.$message.error('上传头像图片大小不能超过 2MB!');
-                }
-                return isJPG && isLt2M;
+                this.active = 1
             },
             submitForm(formName) {
-                this.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate(async (valid) => {
                     if (valid) {
                         if(formName === 'resumeForm') {
+                            // 异步更新求职者头像
                             this.postForm([{
                                 url: "/applicant/saveOrUpdate",
                                 method: "post",
@@ -550,13 +581,46 @@
                             });
                         }
                         else if (formName === 'companyForm') {
-                            this.$message.success("公司新建成功，请尽快发布你的第一个职位吧!");
-                            this.$router.push("/home");
+                            // 异步更新公司logo后，进行招聘官注册，再进行招聘官的头像更新
+                            this.postForm([{
+                                url: "/company/saveOrUpdate",
+                                method: "post",
+                                data: this.companyForm
+                            }]).then(() => {
+                                this.changeAvatar("companyForm");
+                                this.postForm([{
+                                    url: "/recruiter/saveOrUpdate",
+                                    method: "post",
+                                    data: this.recruiterForm
+                                }]).then(() => {
+                                    this.changeAvatar("recruiterForm");
+                                    this.$message.success("公司新建成功，您已成为该公司首位招聘官，请尽快发布你的第一个职位吧!");
+                                })
+                            });
+                            // this.$router.push("/home");
                         } else if(formName === 'companyMemberForm') {
-                            this.$message.success("加入公司成功，请尽快发布你的第一个职位吧!");
-                            this.$router.push("/home");
+                            // 检验会员码是否正确，正确则成功注册招聘官身份，否则提示错误
+                            await this.$axios.request({
+                                url: `/company/getMemberCode?company_id=${this.company.company_id}&member_code=${this.companyMemberForm.member_code}`,
+                                method: "get"
+                            }).then(res => {
+                                console.log(res);
+                                if(res.data.companyExist){
+                                    this.postForm([{
+                                        url: "/recruiter/saveOrUpdate",
+                                        method: "post",
+                                        data: this.recruiterForm
+                                    }]).then(() => {
+                                        this.changeAvatar("recruiterForm");
+                                        this.$message.success("加入公司成功，请尽快发布你的第一个职位吧!");
+                                    })
+                                } else {
+                                    return this.$message.error("会员码有误，请重新输入！")
+                                }
+                            });
+                            // this.$router.push("/home");
                         } else if(formName === 'recruiterForm') {
-                            this.active = 1;
+                            this.getCompanyInfo();
                         }
                     } else {
                         this.$message.error("提交信息有误，请重新输入");
@@ -564,6 +628,7 @@
                     }
                 });
             },
+            // 头像(logo、营业执照)上传和表单数据异步进行，先在数据库表中传递名称，存在该条记录后进行更新
             changeAvatar(formName) {
                 switch(formName) {
                     case "resumeForm":
@@ -580,6 +645,27 @@
                           }])
                       }
                       break;
+                    case "companyForm":
+                        this.postForm([{
+                            url: `/company/upload/${this.companyForm.company_full_name}`,
+                            method: "post",
+                            data: this.avatarFile
+                        }])
+                        break;
+                    case "recruiterForm":
+                        if(this.isDefaultAvatar){
+                            this.postForm([{
+                                url: `/recruiter/uploadDefault?avatarName=${this.avatarName}&login_id=${this.$store.state.login_id}`,
+                                method: "post"
+                            }])
+                        } else {
+                            this.postForm([{
+                                url: `/recruiter/upload/${this.$store.state.login_id}`,
+                                method: "post",
+                                data: this.avatarFile
+                            }])
+                        }
+                        break;
                 }
             }
         },
@@ -753,31 +839,22 @@
             border-top: 1px solid #dcdfe6;
         }
     }
-    
-    .avatar-uploader {
-        /deep/ .el-upload {
-            border: 1px dashed #d9d9d9;
-            border-radius: 6px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            &:hover {
-                border-color: #00c2b3;
-            }
+
+
+    .upload-wrapper {
+        width: 180px;
+        height: 180px;
+        line-height: 180px;
+        border: 1px dashed #d9d9d9;
+        box-sizing: content-box;
+        border-radius: 6px;
+        &:hover {
+            border-color: #00c2b3;
         }
-    }
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
-        text-align: center;
-    }
-    .avatar {
-        width: 178px;
-        height: 178px;
-        display: block;
+        i{
+            font-size: 28px;
+            color: #8c939d;
+        }
     }
 
     .image-occupation{

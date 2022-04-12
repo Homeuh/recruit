@@ -70,10 +70,11 @@
           <div class="setting" v-else-if="currentNav === '个人展示'" :key="currentNav">
           <el-form class="recruiter-setting" :model="recruiterForm" :rules="recruiterFormRules" ref="recruiterForm" label-width="100px">
             <el-form-item label="个性头像：" prop="recruiter_avatar">
-              <el-button type="text">
+              <el-button type="text" @click="uploadVisible = true">
                 <img :src="recruiterForm.recruiter_avatar" :alt="recruiterForm.recruiter_name"
                      style="width: 65px; height: 65px; border-radius: 50%">
               </el-button>
+              <UploadAvatar :visible.sync="uploadVisible" tablePath="recruiter" :uploadDirectly="true" @update:data="getRecruiter"></UploadAvatar>
             </el-form-item>
             <el-form-item label="我的名字：" prop="recruiter_name">
               <el-input v-model="recruiterForm.recruiter_name" placeholder="输入姓名"></el-input>
@@ -113,7 +114,7 @@
         <el-form-item label="登录手机" prop="login_phone">
           <el-input placeholder="请输入当前登录手机号码" v-model="phoneForm.login_phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码验证" prop="password">
+        <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入当前账号登录密码" v-model="phoneForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新的手机" prop="newPhone">
@@ -132,7 +133,7 @@
           :visible.sync="passwordDialogVisible"
           width="30%">
       <el-form :model="passwordForm" :rules="passwordRules" ref="passwordForm" label-width="84px">
-        <el-form-item label="旧密码" prop="password" v-if="this.loginForm.password">
+        <el-form-item label="旧密码" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入旧密码" v-model="passwordForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
@@ -157,11 +158,11 @@
         <el-form-item label="登录手机" prop="login_phone">
           <el-input placeholder="请输入当前登录手机号码" v-model="telForm.login_phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码验证" prop="password">
+        <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入当前账号登录密码" v-model="telForm.password"></el-input>
         </el-form-item>
-        <el-form-item label="新的电话" prop="newPhone">
-          <el-input placeholder="请输入新的联系电话" v-model="telForm.newPhone"></el-input>
+        <el-form-item label="新的电话" prop="newTel">
+          <el-input placeholder="请输入新的联系电话" v-model="telForm.newTel"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -179,7 +180,7 @@
         <el-form-item label="登录手机" prop="login_phone">
           <el-input placeholder="请输入当前登录手机号码" v-model="wechatForm.login_phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码验证" prop="password">
+        <el-form-item label="密码验证" prop="password" v-if="loginForm.password">
           <el-input placeholder="请输入当前账号登录密码" v-model="wechatForm.password"></el-input>
         </el-form-item>
         <el-form-item label="新的微信" prop="newWechat">
@@ -198,9 +199,10 @@
     import GeneralTopBar from "../../../components/GeneralTopBar";
     import GeneralFooter from "../../../components/GeneralFooter";
     import SymbolIcon from "@/components/SymbolIcon";
+    import UploadAvatar from "@/components/UploadAvatar";
     export default {
         name: "RecruiterSetting",
-        components: { GeneralTopBar, GeneralFooter, SymbolIcon},
+        components: { GeneralTopBar, GeneralFooter, SymbolIcon, UploadAvatar},
         data() {
             let checkPhone = (rule, value, callback) => {
                 if (!value) {
@@ -255,6 +257,19 @@
                     callback();
                 }
             };
+            let checkNewTel = (rule, value, callback) => {
+                let reg = /^[1][34578][0-9]{9}$/;
+                if (!value) {
+                    return callback(new Error("新的手机号不能为空"));
+                }
+                else if (!reg.test(value)) {
+                    callback(new Error("请输入正确的手机号"));
+                } else if(this.loginForm.recruiter_tel === value){
+                    callback(new Error("新的手机号不能和旧手机号相同"));
+                } else {
+                    callback();
+                }
+            };
             return {
                 menuList: [
                     { icon: "el-icon-gongzuotai", name: "工作台", href: "/recruiter"},
@@ -267,12 +282,13 @@
                 currentMenu: "账号设置",
                 navList: ["账号设置","个人展示"],
                 currentNav: "账号设置",
-                loginForm: {
+                loginForm: {},
+                /*loginForm: {
                     login_phone: "13522342234",
                     password: "12345678",
                     recruiter_tel: "15725562556",
                     recruiter_wechat: "Recruiter"
-                },
+                },*/
 
                 // 更换手机
                 phoneForm: {
@@ -316,7 +332,7 @@
                 telForm: {
                     login_phone: "",
                     password: "",
-                    newPhone: "",
+                    newTel: "",
                 },
                 telRules: {
                     login_phone: [
@@ -325,8 +341,8 @@
                     password: [
                         { required: true, validator: checkPassword, blur: ['blur','change']}
                     ],
-                    newPhone: [
-                        { required: true, validator: checkNewPhone, blur: 'blur'}
+                    newTel: [
+                        { required: true, validator: checkNewTel, blur: 'blur'}
                     ],
                 },
                 telDialogVisible: false,
@@ -350,14 +366,16 @@
                 },
                 wechatDialogVisible: false,
 
-                recruiterForm: {
+                recruiterForm: {},
+                /*recruiterForm: {
+                    recruiter_id: "",
                     recruiter_avatar: require("@/image/avatar/recruiter_li.png"),
                     recruiter_name: "李玲",
                     recruiter_sex: "女",
                     recruiter_duty: "招聘主管",
                     company_logo: require("@/image/company/meituan.jpg"),
                     company_name: "美团",
-                },
+                },*/
                 recruiterFormRules: {
                     recruiter_name: [
                         { validator: (rule, value, callback) => {
@@ -379,10 +397,103 @@
                          }
                             , trigger: 'change'}
                     ],
-                }
+                },
+
+                uploadVisible: false,
             }
         },
+        created() {
+            this.$store.commit("setLogin");
+            this.initData();
+        },
         methods: {
+            initData() {
+                this.$axios.all([this.getSettingInfo(),this.getRecruiter()]);
+            },
+            async getSettingInfo() {
+                const res = await this.$axios.request({
+                    url: "/recruiter/setting/" + this.$store.state.login_id,
+                    method: "get"
+                })
+                console.log(res)
+                if (res.msg === "success") {
+                    this.loginForm = Object.assign({},{},res.data.loginForm);
+                }
+            },
+            async getRecruiter() {
+                const res = await this.$axios.request({
+                    url: "/recruiter/info/" + this.$store.state.login_id,
+                    method: "get"
+                })
+                console.log(res)
+                if (res.msg === "success") {
+                    res.data.recruiterForm.recruiter_avatar = require("@/image/avatar/" + res.data.recruiterForm.recruiter_avatar);
+                    res.data.recruiterForm.company_logo = require("@/image/company/" + res.data.recruiterForm.company_logo);
+                    this.recruiterForm = Object.assign({},{},res.data.recruiterForm);
+                }
+            },
+            async postForm(formName) {
+                let res;
+                switch(formName){
+                    case "phoneForm":
+                        res = await this.$axios.request({
+                            url: "/login/updatePhone",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newPhone: this[formName].newPhone
+                            }
+                        });
+                        console.log(res);
+                        await this.getSettingInfo();
+                        break;
+                    case "passwordForm":
+                        res = await this.$axios.request({
+                            url: "/login/updatePass",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newPass: this[formName].newPassword
+                            }
+                        });
+                        console.log(res);
+                        await this.getSettingInfo();
+                        break;
+                    case "telForm":
+                        res = await this.$axios.request({
+                            url: "/recruiter/updateTel",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newTel: this[formName].newTel
+                            }
+                        });
+                        console.log(res);
+                        await this.getSettingInfo();
+                        break;
+                    case "wechatForm":
+                        res = await this.$axios.request({
+                            url: "/recruiter/updateWechat",
+                            method: "post",
+                            data: {
+                                login_id: this.$store.state.login_id,
+                                newWechat: this[formName].newWechat
+                            }
+                        });
+                        console.log(res);
+                        await this.getSettingInfo();
+                        break;
+                    case "recruiterForm":
+                        res = await this.$axios.request({
+                            url: "/recruiter/update",
+                            method: "post",
+                            data: this.recruiterForm
+                        });
+                        console.log(res);
+                        await this.getRecruiter();
+                        break;
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
@@ -402,6 +513,7 @@
             submitForm(formName, editDialog) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.postForm(formName);
                         this.$message.success("更换成功");
                         this.resetForm(formName, editDialog);
                     } else {

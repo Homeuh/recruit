@@ -41,7 +41,6 @@ import {
     TableColumn,
     Timeline,
     TimelineItem,
-    Upload,
     Radio,
     Rate,
     Pagination,
@@ -77,7 +76,6 @@ Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Timeline)
 Vue.use(TimelineItem)
-Vue.use(Upload)
 Vue.use(Radio)
 Vue.use(Rate)
 Vue.use(Pagination)

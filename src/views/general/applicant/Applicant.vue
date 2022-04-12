@@ -106,12 +106,12 @@
                   </div>
                   <div class="apply-status">
                     <span>投递时间：{{ apply.create_date }}</span>
-                    <span v-if="apply.apply_status === 0" style="color: #F56C6C">简历不合适</span>
-                    <span v-else-if="apply.apply_status === 1" style="color: #8d92a1">简历投递中~</span>
-                    <span v-else-if="apply.apply_status === 2" style="color: #00c2b3">简历被查看</span>
-                    <span v-else-if="apply.apply_status === 3" style="color: #E6A23C">公司感兴趣</span>
-                    <span v-else-if="apply.apply_status === 4" style="color: #00c2b3">收到面试邀请~</span>
-                    <span v-else-if="apply.apply_status === 5" style="color: #8d92a1">面试已结束</span>
+                    <span v-if="apply.apply_status === '0'" style="color: #F56C6C">简历不合适</span>
+                    <span v-else-if="apply.apply_status === '1'" style="color: #8d92a1">简历投递中~</span>
+                    <span v-else-if="apply.apply_status === '2'" style="color: #00c2b3">简历被查看</span>
+                    <span v-else-if="apply.apply_status === '3'" style="color: #E6A23C">公司感兴趣</span>
+                    <span v-else-if="apply.apply_status === '4'" style="color: #00c2b3">收到面试邀请~</span>
+                    <span v-else-if="apply.apply_status === '5'" style="color: #8d92a1">面试已结束</span>
                   </div>
                 </li>
               </ul>
@@ -240,7 +240,7 @@ export default {
                     interview_date: "2022-3-21 16:30",
                 }
             ],*/
-            apply_num: 17,
+            // apply_num: 17,
             /*applyList: [
                 {
                     job_duty: "前端开发工程师",
@@ -345,6 +345,7 @@ export default {
                 arrive_date: "2周内"
             },*/
             interviewList: [],
+            apply_num: 0,
             applyList: [],
             applicant: {},
             jobIntention: {},
@@ -368,19 +369,20 @@ export default {
             //         this.company = res.data.company;
             //     }
             // };
-            // let getApplyList = async () => {
-            //     const res = await this.$axios.request({
-            //         url: `/company/infoHotRecruiter/${this.$route.query.company_id}`,
-            //         method: "get",
-            //     });
-            //     console.log(res);
-            //     if(res.msg === 'success'){
-            //         res.data.hotRecruiter.forEach(item => {
-            //             item.recruiter_avatar = require("@/image/avatar/" + item.recruiter_avatar);
-            //         })
-            //         this.hotRecruiter = res.data.hotRecruiter;
-            //     }
-            // };
+            let getApplyList = async () => {
+                const res = await this.$axios.request({
+                    url: `/apply/list/${this.$store.state.login_id}`,
+                    method: "get",
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    res.data.applyList.forEach(item => {
+                        item.company_logo = require("@/image/company/" + item.company_logo);
+                    })
+                    this.apply_num = res.data.apply_num;
+                    this.applyList = Object.assign([],[],res.data.applyList);
+                }
+            };
             let getApplicant = async () => {
                 const res = await this.$axios.request({
                     url: `/applicant/info/${this.$store.state.login_id}`,
@@ -402,7 +404,7 @@ export default {
                     this.jobIntention = Object.assign({},{},res.data.jobIntention);
                 }
             };
-            this.$axios.request([getApplicant(),getJobIntention()]);
+            this.$axios.request([getApplyList(),getApplicant(),getJobIntention()]);
         },
         menuSelect(name) {
             this.currentMenu = name;
