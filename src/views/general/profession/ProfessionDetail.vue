@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="detail-main margin-20per">
-        <aside>
+        <aside ref="aside">
           <div class="company-name">
             <el-link href="/company/detail">
               <img :src="!company.company_logo ? require('@/image/illustration/company_logo.png') : company.company_logo"
@@ -89,7 +89,7 @@
             <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
           </div>
         </aside>
-        <div class="job-detail">
+        <div class="job-detail" ref="job_detail">
           <div class="job-recruiter">
             <h3>职位发布者</h3>
             <div class="content">
@@ -156,6 +156,7 @@ import GeneralTopBar from "../../../components/GeneralTopBar";
 import GeneralFooter from "../../../components/GeneralFooter";
 import Map from "../../../components/Map.vue";
 import InterviewEvaluation from "../widgets/InterviewEvaluation.vue";
+import setMinHeight from "@/utils/setMinHeight";
 export default {
     name: "ProfessionDetail",
     components: { GeneralTopBar, GeneralFooter, Map, InterviewEvaluation},
@@ -284,7 +285,11 @@ export default {
     async created() {
         this.$store.commit("setLogin");
         await this.initData();
+
         await this.judgeApply();
+    },
+    mounted() {
+        setMinHeight(this, this.$refs.job_detail);
     },
     methods: {
         async initData() {
@@ -301,6 +306,9 @@ export default {
                 
                 res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
                 this.company = Object.assign({},{},res.data.company);
+
+                // 告知父组件已完成后台数据请求，用于招聘官职位详情预览
+                this.$emit("completeUpdate:profession", true);
             }
         },
         collect() {
@@ -531,6 +539,7 @@ main{
         aside{
             width: 300px;
             float: right;
+            margin-bottom: 100px;
             padding-left: 40px;
             > div + div{
                 margin-top: 40px;

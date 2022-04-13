@@ -52,7 +52,7 @@
             }
         },
         created() {
-            // console.log(this.applicant_id);
+            console.log(this.applicant_id);
             this.getResumeId();
         },
         watch: {

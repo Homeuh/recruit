@@ -1,6 +1,6 @@
 <template>
     <div class="show-resume">
-      <Resume v-if="!resumeImg" ref="resume" />
+      <Resume v-if="!resumeImg" :applicant_id="applicant_id" ref="resume" @completeUpdate:resume="resumePreview"/>
       <img v-else ref="resume_img" class="resume-img">
     </div>
 </template>
@@ -11,6 +11,12 @@
     export default {
         name: "ShowResume",
         components: { Resume},
+        props: {
+            applicant_id: {
+                type: String,
+                required: true
+            }
+        },
         created() {
             this.$store.commit("setOnlyReadResume");
         },
@@ -32,15 +38,19 @@
         },
         methods: {
             // 简历转换为base64图片
-            resumePreview() {
-                html2canvas(this.$refs.resume.$el, {
-                    background: null,
-                }).then((canvas) => {
-                    console.log(canvas)
-                    //将canvas转为base64格式
-                    // console.log(canvas.toDataURL("image/png"));
-                    this.resumeImg = canvas.toDataURL("image/png");
-                });
+            resumePreview(isComplete) {
+                if(isComplete){
+                    this.$nextTick(() =>{
+                        html2canvas(this.$refs.resume.$el, {
+                            background: null,
+                        }).then((canvas) => {
+                            console.log(canvas)
+                            //将canvas转为base64格式
+                            // console.log(canvas.toDataURL("image/png"));
+                            this.resumeImg = canvas.toDataURL("image/png");
+                        });
+                    })
+                }
             },
         },
     }

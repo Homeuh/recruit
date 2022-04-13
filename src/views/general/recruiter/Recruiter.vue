@@ -33,7 +33,7 @@
                   <div class="status-content">已发布职位</div>
                 </div>
                 <div class="status-wrapper">
-                  <div class="status-title">{{ status.feedback_rate }}</div>
+                  <div class="status-title">{{ status.feedback_rate }}%</div>
                   <div class="status-content">简历反馈率</div>
                 </div>
                 <div class="status-wrapper">
@@ -139,7 +139,7 @@
                               <span>{{ apply.applicant_sex }}</span>
                               <el-divider direction="vertical"></el-divider>
                               <span>{{ apply.applicant_identity }}</span>
-                              <el-button round @click="showResume = true">查看简历</el-button>
+                              <el-button round @click="viewResume(apply.applicant_id)">查看简历</el-button>
                             </p>
                             <p>
                               <span>{{ apply.applicant_age }}岁</span>
@@ -179,7 +179,7 @@
               </div>
             </div>
             <!-- 简历详情 -->
-            <ShowResume v-else/>
+            <ShowResume v-else :applicant_id="selectedApplicantId"/>
           </transition>
         </div>
       </main>
@@ -207,15 +207,18 @@
                     { icon: "el-icon-shezhi", name: "账号设置", href: "/recruiter/setting"}
                 ],
                 currentMenu: "工作台",
-                status: {
+                status: {},
+               /* status: {
                     applicant_num: 105,
                     apply_num: 245,
                     job_num: 45,
-                    feedback_rate: "90%",
+                    feedback_rate: "90",
                     login_date: "2天内"
-                },
-                recent_interview_num: 8,
-                interviewList: [
+                },*/
+                recent_interview_num: 0,
+                interviewList: [],
+                // recent_interview_num: 8,
+                /*interviewList: [
                     {
                         applicant_avatar: require("@/image/avatar/applicant_zhang.png"),
                         applicant_name: "张三",
@@ -284,10 +287,13 @@
                         interview_date: "2022-3-24 16:30",
                         interview_status: "2",
                     },
-                ],
-                recent_apply_num: 14,
-                applyList: [
+                ],*/
+                recent_apply_num: 0,
+                applyList: [],
+                // recent_apply_num: 14,
+                /*applyList: [
                     {
+                        applicant_id:"",
                         applicant_avatar: require("@/image/avatar/applicant_liu.png"),
                         applicant_name: "刘维",
                         applicant_sex: "男",
@@ -303,6 +309,7 @@
                         create_date: "2022-3-21 21:02"
                     },
                     {
+                        applicant_id:"",
                         applicant_avatar: require("@/image/avatar/applicant_wang.png"),
                         applicant_name: "王攀琥",
                         applicant_sex: "男",
@@ -320,6 +327,7 @@
                         create_date: "2022-3-21 20:47"
                     },
                     {
+                        applicant_id:"",
                         applicant_avatar: require("@/image/avatar/applicant_xie.png"),
                         applicant_name: "谢灵运",
                         applicant_sex: "女",
@@ -337,6 +345,7 @@
                         create_date: "2022-3-21 20:14"
                     },
                     {
+                        applicant_id:"",
                         applicant_avatar: require("@/image/avatar/applicant_zou.png"),
                         applicant_name: "邹周",
                         applicant_sex: "男",
@@ -353,18 +362,68 @@
                         education: "本科",
                         create_date: "2022-3-22 18:33"
                     }
-                ],
+                ],*/
                 
-                showResume: false
+                showResume: false,
+                selectedApplicantId: ""
             }
         },
+        created() {
+            this.$store.commit("setLogin");
+            this.initData();
+        },
         methods: {
+            initData() {
+                let getStatus = async () => {
+                    const res = await this.$axios.request({
+                        url: `/recruiter/getStatus/${this.$store.state.login_id}`,
+                        method: "get"
+                    })
+                    console.log(res);
+                    if(res.msg === "success") {
+                        this.status = Object.assign({},{},res.data.status);
+                    }
+                }
+                // let getInterviewList = async () => {
+                //     const res = await this.$axios.request({
+                //         url: `/recruiter/list/${this.$store.state.login_id}`,
+                //         method: "get"
+                //     })
+                //     console.log(res);
+                //     if(res.msg === "success") {
+                //         res.data.interviewList.forEach(item => {
+                //             item.applicant_avatar = require("@/image/avatar/" + item.applicant_avatar);
+                //         })
+                //         this.recent_interview_num = res.data.recent_interview_num;
+                //         this.interviewList = res.data.interviewList;
+                //     }
+                // }
+                let getApplyList = async () => {
+                    const res = await this.$axios.request({
+                        url: `/recruiter/list/${this.$store.state.login_id}`,
+                        method: "get"
+                    })
+                    console.log(res);
+                    if(res.msg === "success") {
+                        res.data.applyList.forEach(item => {
+                            item.applicant_avatar = require("@/image/avatar/" + item.applicant_avatar);
+                        })
+                        this.recent_apply_num = res.data.recent_apply_num;
+                        this.applyList = res.data.applyList;
+                    }
+                }
+                this.$axios.all([getStatus(),getApplyList()])
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
             splitTimeStamp(timeStamp) {
                 return timeStamp.split(" ");
             },
+            viewResume(applicant_id) {
+                this.selectedApplicantId = applicant_id;
+                this.showResume = true;
+            }
         },
     }
 </script>
