@@ -353,7 +353,7 @@ export default {
                 },
             ],
             currentPage: 1,
-            pageSize: 1,
+            pageSize: 10,
             total: 1000,
             dialogVisible: false
         }

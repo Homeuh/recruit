@@ -39,11 +39,11 @@
               <div class="filter-condition">
                 <div class="condition-wrapper">
                   <span>投递职位：</span>
-                  <SelectWrapper :label="conditionJob[0]" :options="conditionJob"/>
+                  <SelectWrapper :label="currentJob" :options="conditionJob" @update:label="changeJob"/>
                 </div>
                 <div class="condition-wrapper">
                   <span>投递时间：</span>
-                  <SelectWrapper :label="conditionDate[0]" :options="conditionDate"/>
+                  <SelectWrapper :label="currentDate" :options="conditionDate" @update:label="changeDate"/>
                 </div>
                 <div class="selected-btn">
                   <el-button round>一键面试</el-button>
@@ -57,7 +57,7 @@
             <div class="apply-table" v-else>
               <el-table
                     ref="multipleTable"
-                    :data="applyList"
+                    :data="filterApplyList"
                     stripe
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
@@ -114,7 +114,7 @@
                       label="应聘职位">
                 </el-table-column>
                 <el-table-column
-                      prop="interview_date"
+                      prop="create_date"
                       label="投递时间">
                 </el-table-column>
                 <el-table-column
@@ -145,7 +145,7 @@
                 <el-pagination
                       @current-change="handleCurrentChange"
                       :current-page.sync="currentPage"
-                      :page-size="100"
+                      :page-size="pageSize"
                       background
                       layout="prev, pager, next"
                       :total="total">
@@ -189,7 +189,8 @@
                     { icon: "el-icon-shezhi", name: "账号设置", href: "/recruiter/setting"}
                 ],
                 currentMenu: "简历处理",
-                industryList: [
+                industryList: [],
+                /*industryList: [
                     { job_industry: "全部", job_num: 39 },
                     { job_industry: "技术", job_num: 11 },
                     { job_industry: "产品", job_num: 9 },
@@ -199,12 +200,16 @@
                     { job_industry: "咨询/翻译/法律", job_num: 0 },
                     { job_industry: "人事/财务/行政", job_num: 0 },
                     { job_industry: "市场", job_num: 10 }
-                ],
+                ],*/
                 currentIndustry: "全部",
                 searchKey: "",
-                conditionJob: ["不限","前端工程师","后端工程师","所有来自我发布的职位"],
+                // conditionJob: ["不限","前端工程师","后端工程师","所有来自我发布的职位"],
+                conditionJob: ["不限"],
+                currentJob: "不限",
                 conditionDate: ["不限","今天","2天内","3天内","1周内","2周内","1个月内","3个月内","半年内","半年以上"],
-                applyList: [
+                currentDate: "不限",
+                applyList: [],
+                /*applyList: [
                     {
                         applicant_avatar: require("@/image/avatar/applicant_zhang.png"),
                         applicant_name: "张三",
@@ -216,7 +221,7 @@
                         major: "软件工程",
                         school_name: "清华大学",
                         job_duty: "前端工程师",
-                        interview_date: "2022-3-15 14:00",
+                        create_date: "2022-3-15 14:00",
                     },
                     {
                         applicant_avatar: require("@/image/avatar/applicant_huang.png"),
@@ -229,7 +234,7 @@
                         major: "电子信息工程",
                         school_name: "北京大学",
                         job_duty: "前端助理",
-                        interview_date: "2022-3-18 10:00",
+                        create_date: "2022-3-18 10:00",
                     },
                     {
                         applicant_avatar: require("@/image/avatar/applicant_tong.png"),
@@ -242,7 +247,7 @@
                         major: "",
                         school_name: "",
                         job_duty: "前端开发工程师",
-                        interview_date: "2022-3-21 16:30",
+                        create_date: "2022-3-21 16:30",
                     },
                     {
                         applicant_avatar: require("@/image/avatar/applicant_wei.png"),
@@ -255,18 +260,20 @@
                         major: "电子商务",
                         school_name: "南京大学",
                         job_duty: "内容运营",
-                        interview_date: "2022-3-24 16:30",
+                        create_date: "2022-3-24 16:30",
                     },
-                ],
+                ],*/
 
                 secondLabel: Constant.HEADER_TABLE_IDENTITY,
                 secondHeader: [Constant.HEADER_TABLE_IDENTITY, Constant.HEADER_TABLE_MAJOR],
             
                 userHandle: [
+                    { icon: "el-icon-s-opportunity", label: Constant.INTERESTED},
                     { icon: "el-icon-message", label: Constant.INTERVIEW_INVITATION},
                     { icon: "el-icon-delete-solid", label: Constant.INAPPROPRIATE}
                 ],
                 currentPage: 1,
+                pageSize: 10,
                 total: 1000,
                 
                 showResume: false
@@ -275,9 +282,77 @@
         computed: {
             filterIndustry() {
                 return this.industryList.filter(item => item.job_num)
+            },
+            filterApplyList() {
+                if (Object.keys(this.applyList).length !== 0) {
+                    return this.applyList.filter(item => {
+                        // 行业筛选，不请求后台数据，简单过滤
+                        if(this.currentIndustry !== "全部") {
+                            return item.job_industry === this.currentIndustry
+                        } else {
+                            return this.applyList;
+                        }
+                    });
+                }
+                return this.applyList;
             }
         },
+        created() {
+            this.$store.commit("setLogin");
+            this.initData();
+        },
         methods: {
+            initData() {
+                this.$axios.all([this.getIndustryList(),this.getConditionJob(),this.getApplyList()]);
+            },
+            async getIndustryList() {
+                const res = await this.$axios.request({
+                    url: `/apply/countByIndustry/${this.$store.state.login_id}`,
+                    method: "get"
+                })
+                console.log(res);
+                if(res.msg === "success") {
+                    this.industryList = Object.assign(  [],[],res.data.industryList);
+                    const allCount = this.industryList.reduce((prev, cur) => prev += cur.job_num,0);
+                    let obj = {
+                        job_industry: "全部",
+                        job_num: allCount
+                    }
+                    this.industryList.unshift(obj);
+                }
+            },
+            async getConditionJob() {
+                const res = await this.$axios.request({
+                    url: `/apply/getJobDuty/${this.$store.state.login_id}`,
+                    method: "get"
+                })
+                console.log(res);
+                if(res.msg === "success") {
+                    this.conditionJob = Object.assign([],[],res.data.conditionJob);
+                    this.conditionJob.unshift("不限");
+                }
+            },
+            async getApplyList() {
+                const res = await this.$axios.request({
+                    url: `/apply/applyManagePage`,
+                    method: "get",
+                    params: {
+                        currentPage: this.currentPage,
+                        pageSize: this.pageSize,
+                        login_id: this.$store.state.login_id,
+                        job_duty: this.currentJob !== "不限" ? this.currentJob : "",
+                        condition: this.currentDate
+                    }
+                })
+                console.log(res);
+                if(res.msg === "success") {
+                    res.data.applyList.forEach(item => {
+                        item.applicant_avatar = require("@/image/avatar/" + item.applicant_avatar);
+                    })
+                    this.total = res.data.total
+                    this.applyList = Object.assign([],[],res.data.applyList);
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
@@ -286,6 +361,16 @@
             },
             search() {
                 console.log(this.searchKey);
+            },
+            // 投递职位选中
+            changeJob(value) {
+                this.currentJob = value;
+                this.getApplyList();
+            },
+            // 投递时间选中
+            changeDate(value) {
+                this.currentDate = value;
+                this.getApplyList();
             },
             handleSelectionChange(val) {
                 console.log(val)
@@ -316,8 +401,9 @@
                 }
             },
             handleCurrentChange(value) {
-                console.log(value)
-                console.log(this.$route)
+                // console.log(value)
+                this.currentPage = value;
+                this.getApplyList();
             }
         },
     }

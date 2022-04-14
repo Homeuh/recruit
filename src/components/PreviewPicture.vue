@@ -88,7 +88,7 @@
                         html2canvas(obj, {
                             background: null,
                             // width: 972
-                        }).then((canvas) => {
+                        }).then(async (canvas) => {
                             console.log(canvas);
                             // 截图成功后销毁组件
                             this.previewResume = false;
@@ -96,11 +96,11 @@
                             //将canvas转为base64格式
                             // const imgUrl = canvas.toDataURL("image/png");
                             // console.log(imgUrl);
-                            this.resumeImg = canvas.toDataURL("image/png");
+                            this.resumeImg = await canvas.toDataURL("image/png");
                         });
 
                         this.stopMove();
-                        this.$emit("update:preview", true);
+                        // this.$emit("update:preview", true);
                     })
                 }
             },

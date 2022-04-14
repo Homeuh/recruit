@@ -301,7 +301,9 @@ export default {
             console.log(res);
             if(res.msg === 'success'){
                 res.data.jobData.recruiter_avatar = require("@/image/avatar/" + res.data.jobData.recruiter_avatar);
-                res.data.jobData.job_tag = res.data.jobData.job_tag.split(",");
+                if(res.data.jobData.job_tag) {
+                    res.data.jobData.job_tag = res.data.jobData.job_tag.split(",");
+                }
                 this.jobData = Object.assign({},{},res.data.jobData);
                 
                 res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
@@ -431,6 +433,7 @@ main{
                     color: @fontColor;
                 }
                 .job-tag{
+                    height: 45px;
                     line-height: 45px;
                     font-size: 12px;
                     span{

@@ -471,6 +471,7 @@
                         this.previewVisible = true;
                         break;
                     case Constant.JOB_EDIT:
+                        this.$router.push("/recruiter/post?job_id=" + row.job_id);
                         break;
                     case Constant.JOB_REMOVE:
                         this.updateStatus([row.job_id], "2");

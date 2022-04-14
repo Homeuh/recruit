@@ -32,6 +32,7 @@ export const JOB_DELETE = "删除";
 // recruiter --- 简历处理
 export const HEADER_TABLE_IDENTITY = "当前身份";
 export const HEADER_TABLE_MAJOR = "所学专业";
+export const INTERESTED = "感兴趣";
 export const INTERVIEW_INVITATION = "面试邀请";
 export const INAPPROPRIATE = "不合适";
 
