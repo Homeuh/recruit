@@ -68,7 +68,10 @@
             <h3>在招职位</h3>
             <ul>
               <li v-for="(rej,index) in recruit_job" :key="rej.job_duty + index">
-                <el-link class="job-duty" :title="rej.job_duty"> {{ rej.job_duty }}</el-link>
+                <el-link class="job-duty" :title="rej.job_duty"
+                         :href="'/profession/detail?job_id=' + rej.job_id"
+                > {{ rej.job_duty }}
+                </el-link>
                 <p class="job-salary">{{ rej.job_salary }}</p>
                 <p class="job-request">
                   <span>{{ rej.office_city }}</span>
@@ -79,13 +82,16 @@
                 </p>
               </li>
             </ul>
-            <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
+            <el-link :href="'/company/job?company_id=' + company.company_id"
+                     class="show-more"
+            >查看更多职位<i class="el-icon-arrow-right"></i>
+            </el-link>
           </div>
         </aside>
         <div class="company-introduce" ref="company_introduce">
           <div class="company-introduction">
             <h3>公司简介</h3>
-            <div class="content">
+            <div class="content" v-if="company.company_introduction">
               <p v-for="intro in filter(company.company_introduction)" :key="intro">{{ intro }}</p>
             </div>
           </div>
@@ -107,7 +113,7 @@
           <div class="company-address">
             <h3>公司位置</h3>
             <div class="content">
-              <Map :address="company.company_address" />
+              <Map :address="company.company_address" v-if="company.company_address"/>
             </div>
           </div>
           <InterviewEvaluation :dataList="evaluation" :showMoreBtn="true" :isCompany="true"/>
@@ -258,7 +264,7 @@ export default {
         this.initData()
     },
     methods: {
-        initData() {
+        async initData() {
             let getCompany = async () => {
                 const res = await this.$axios.request({
                     url: `/company/info/${this.$route.query.company_id}`,
@@ -294,7 +300,7 @@ export default {
                     this.recruit_job = Object.assign([],[],res.data.recruit_job);
                 }
             };
-            this.$axios.request([getCompany(),getHotRecruiter(),getRecruitJob()]);
+            await this.$axios.all([getCompany(),getHotRecruiter(),getRecruitJob()]);
         },
         filter(data) {
             return data.split("\n");

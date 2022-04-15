@@ -35,14 +35,18 @@
           </div>
         </div>
         <div class="job-tab margin-20per">
-          <el-link href="/profession/detail" :class="{'is-active': $route.path === '/profession/detail'}">职位详情</el-link>
-          <el-link href="/profession/evaluation" :class="{'is-active': $route.path === '/profession/evaluation'}">面试评价</el-link>
+          <el-link :href="'/profession/detail?job_id=' + $route.query.job_id"
+                   :class="{'is-active': $route.path === '/profession/detail'}"
+          >职位详情</el-link>
+          <el-link :href="'/profession/evaluation?job_id=' + $route.query.job_id"
+                   :class="{'is-active': $route.path === '/profession/evaluation'}"
+          >面试评价</el-link>
         </div>
       </div>
       <div class="detail-main margin-20per">
         <aside ref="aside">
           <div class="company-name">
-            <el-link href="/company/detail">
+            <el-link :href="'/company/detail?company_id=' + company.company_id">
               <img :src="!company.company_logo ? require('@/image/illustration/company_logo.png') : company.company_logo"
                    :alt="company.company_name" :title="company.company_name"
                    style="width: 100px; height: 100px"/>
@@ -295,8 +299,12 @@ export default {
         async initData() {
             // console.log(this.$route);
             const res = await this.$axios.request({
-                url: `/job/info/${this.$route.query.job_id}`,
-                method: "get"
+                url: `/job/info`,
+                method: "get",
+                params: {
+                    job_id: this.$route.query.job_id,
+                    isDetail: true // 是否获取职位详细数据（区分职位详情和职位评价的信息量返回）
+                }
             });
             console.log(res);
             if(res.msg === 'success'){

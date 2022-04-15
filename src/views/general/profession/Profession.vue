@@ -74,7 +74,7 @@
               <li v-for="(job, jobIndex) in jobList" :key="job.name + jobIndex">
                 <div class="job-wrapper">
                   <div class="info-primary">
-                    <el-link href="/profession/detail" class="job-info">
+                    <el-link :href="'/profession/detail?job_id=' + job.job_id" class="job-info">
                       <div class="job-title">
                         <span>{{ job.name }}</span>
                         <span>[{{ job.address }}]</span>
@@ -94,7 +94,7 @@
                     </el-link>
                     <div class="company-info">
                       <div class="company-text">
-                        <el-link class="company-name" href="/company/detail">
+                        <el-link class="company-name" :href="'/company/detail?company_id=' + job.company_id">
                           <span>{{ job.companyName }}</span>
                         </el-link>
                         <div class="company-detail">
@@ -103,7 +103,7 @@
                           <span>{{ job.companySize }}</span>
                         </div>
                       </div>
-                      <el-link class="company" href="/company/detail">
+                      <el-link class="company" :href="'/company/detail?company_id=' + job.company_id">
                         <img :src="job.companyIcon" :alt="job.companyName"
                              style="width: 56px; height: 56px;
                                     border-radius: 9px; object-fit: cover"

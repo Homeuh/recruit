@@ -76,7 +76,12 @@
           <li v-for="(company,index) in hotCompany" :key="company.name + index">
             <div class="sub-li">
               <div class="company-introduction">
-                <p><el-link href="/company/detail"><img :src="company.icon" :alt="company.name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
+                <p>
+                    <el-link :href="'/company/detail?company_id=' + company.company_id">
+                        <img :src="company.icon" :alt="company.name"
+                            style="width: 80px; height: 80px; object-fit: cover">
+                    </el-link>
+                </p>
                 <h3>{{ company.name }}</h3>
                 <h4>
                   {{ company.tag }}
@@ -86,15 +91,15 @@
                 <h4 :title="company.description">{{ company.description }}</h4>
               </div>
               <div class="company-recruit">
-                <el-link href="/company/evaluation" class="job-link">
+                <el-link :href="'/company/evaluation?company_id=' + company.company_id" class="job-link">
                   <p>{{ company.userComment }}</p>
                   <p>面试评价</p>
                 </el-link>
-                <el-link href="/company/job" class="job-link">
+                <el-link :href="'/company/job?company_id=' + company.company_id" class="job-link">
                   <p>{{ company.recruit }}</p>
                   <p>在招职位</p>
                 </el-link>
-                <el-link href="/company/detail" class="job-link">
+                <el-link :href="'/company/detail?company_id=' + company.company_id" class="job-link">
                   <p>{{ company.activity }}%</p>
                   <p>简历处理率</p>
                 </el-link>

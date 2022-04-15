@@ -78,7 +78,10 @@
                 </p>
               </li>
             </ul>
-            <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
+              <el-link :href="'/company/job?company_id=' + company.company_id"
+                       class="show-more"
+              >查看更多职位<i class="el-icon-arrow-right"></i>
+              </el-link>
           </div>
         </aside>
         <div class="company-job-box" ref="company_job_box">
@@ -93,7 +96,8 @@
             </div>
           </div>
           <div class="filter-job">
-            <el-link v-for="(fjob,index) in filterJob" :key="fjob.job_duty + index">
+            <el-link v-for="(fjob,index) in filterJob" :key="fjob.job_duty + index"
+                     :href="'/profession/detail?job_id=' + fjob.job_id">
               <h2>
                 <span class="job-duty">{{ fjob.job_duty }}</span>
                 <span class="job-salary">{{ fjob.job_salary }}</span>
@@ -334,41 +338,46 @@ export default {
     },
     methods: {
         initData() {
-            let getCompany = async () => {
-                const res = await this.$axios.request({
-                    url: `/company/info/${this.$route.query.company_id}`,
-                    method: "get",
-                });
-                console.log(res);
-                if(res.msg === 'success'){
-                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
-                    this.company = Object.assign({},{},res.data.company);
+            this.$axios.all([this.getCompany(),this.getFilterJob(),this.getRecruitJob()]);
+        },
+        async getCompany() {
+            const res = await this.$axios.request({
+                url: `/company/info/${this.$route.query.company_id}`,
+                method: "get",
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                this.company = Object.assign({},{},res.data.company);
+            }
+        },
+        async getFilterJob() {
+            const res = await this.$axios.request({
+                url: `/company/pageJob/${this.$route.query.company_id}`,
+                method: "get",
+                params: {
+                    currentPage: this.currentPage,
+                    pageSize: this.pageSize
                 }
-            };
-            let getFilterJob = async () => {
-                const res = await this.$axios.request({
-                    url: `/company/pageJob/${this.$route.query.company_id}`,
-                    method: "get",
-                });
-                console.log(res);
-                if(res.msg === 'success'){
-                    res.data.filterJob.forEach(item => {
-                        item.recruiter_avatar = require("@/image/avatar/" + item.recruiter_avatar);
-                    })
-                    this.filterJob = Object.assign([],[],res.data.filterJob);
-                }
-            };
-            let getRecruitJob = async () => {
-                const res = await this.$axios.request({
-                    url: `/company/listJob/${this.$route.query.company_id}`,
-                    method: "get",
-                });
-                console.log(res);
-                if(res.msg === 'success'){
-                    this.recruit_job = Object.assign([],[],res.data.recruit_job);
-                }
-            };
-            this.$axios.request([getCompany(),getFilterJob(),getRecruitJob()]);
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                res.data.filterJob.forEach(item => {
+                    item.recruiter_avatar = require("@/image/avatar/" + item.recruiter_avatar);
+                })
+                this.total = res.data.total;
+                this.filterJob = Object.assign([],[],res.data.filterJob);
+            }
+        },
+        async getRecruitJob() {
+            const res = await this.$axios.request({
+                url: `/company/listJob/${this.$route.query.company_id}`,
+                method: "get",
+            });
+            console.log(res);
+            if(res.msg === 'success'){
+                this.recruit_job = Object.assign([],[],res.data.recruit_job);
+            }
         },
         filter(data) {
             return data.split("\n");
@@ -376,6 +385,7 @@ export default {
         handleCurrentChange(value) {
             // console.log(value)
             this.currentPage = value;
+            this.getFilterJob();
         }
     },
 }
@@ -655,7 +665,7 @@ main{
             .page{
                 text-align: center;
                 .el-pagination{
-                    margin-right: 300px;
+                    //margin-right: 300px;
                     /deep/ button, /deep/ li {
                         background: #fff;
                     }

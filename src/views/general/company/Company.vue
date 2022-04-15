@@ -37,7 +37,12 @@
             <li v-for="(company,index) in companyList" :key="company.company_name + index">
               <div class="sub-li">
                 <div class="company-introduction">
-                  <p><el-link href="/company/detail"><img :src="company.company_logo" :alt="company.company_name" style="width: 80px; height: 80px; object-fit: cover"></el-link></p>
+                  <p>
+                      <el-link :href="'/company/detail?company_id=' + company.company_id">
+                          <img :src="company.company_logo" :alt="company.company_name"
+                               style="width: 80px; height: 80px; object-fit: cover">
+                      </el-link>
+                  </p>
                   <h3>{{ company.company_name }}</h3>
                   <h4>
                     {{ company.company_tag }}
@@ -47,15 +52,15 @@
                   <h4 :title="company.company_description">{{ company.company_description }}</h4>
                 </div>
                 <div class="company-recruit">
-                  <el-link href="/company/evaluation" class="job-link">
+                  <el-link :href="'/company/evaluation?company_id=' + company.company_id" class="job-link">
                     <p>{{ company.userComment }}</p>
                     <p>面试评价</p>
                   </el-link>
-                  <el-link href="/company/job" class="job-link">
+                  <el-link :href="'/company/job?company_id=' + company.company_id" class="job-link">
                     <p>{{ company.recruit }}</p>
                     <p>在招职位</p>
                   </el-link>
-                  <el-link href="/company/detail" class="job-link">
+                  <el-link :href="'/company/detail?company_id=' + company.company_id" class="job-link">
                     <p>{{ company.activity }}%</p>
                     <p>简历处理率</p>
                   </el-link>

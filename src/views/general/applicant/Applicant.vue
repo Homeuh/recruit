@@ -404,7 +404,7 @@ export default {
                     this.jobIntention = Object.assign({},{},res.data.jobIntention);
                 }
             };
-            this.$axios.request([getApplyList(),getApplicant(),getJobIntention()]);
+            this.$axios.all([getApplyList(),getApplicant(),getJobIntention()]);
         },
         menuSelect(name) {
             this.currentMenu = name;

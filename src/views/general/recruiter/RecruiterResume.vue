@@ -39,15 +39,15 @@
               <div class="filter-condition">
                 <div class="condition-wrapper">
                   <span>投递职位：</span>
-                  <SelectWrapper :label="currentJob" :options="conditionJob" @update:label="changeJob"/>
+                  <SelectWrapper :label="currentJob" :options="filterConditionJob.map(item => item.job_duty)" @update:label="changeJob"/>
                 </div>
                 <div class="condition-wrapper">
                   <span>投递时间：</span>
                   <SelectWrapper :label="currentDate" :options="conditionDate" @update:label="changeDate"/>
                 </div>
                 <div class="selected-btn">
-                  <el-button round>一键面试</el-button>
-                  <el-button round>一键拒绝</el-button>
+                  <el-button round @click="updateStatus(selectedApplyIds,'4')">一键面试</el-button>
+                  <el-button round @click="updateStatus(selectedApplyIds,'0')">一键拒绝</el-button>
                 </div>
               </div>
             </div>
@@ -57,7 +57,7 @@
             <div class="apply-table" v-else>
               <el-table
                     ref="multipleTable"
-                    :data="filterApplyList"
+                    :data="applyList"
                     stripe
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
@@ -74,7 +74,7 @@
                       <img :src="scope.row.applicant_avatar" :alt="scope.row.applicant_name"
                            style="width: 65px; height: 65px;"/>
                       <p>
-                        <el-button type="text" class="applicant_name" @click="showResume = true">{{ scope.row.applicant_name }}</el-button>
+                        <el-button type="text" class="applicant_name" @click="viewResume(scope.row.applicant_id)">{{ scope.row.applicant_name }}</el-button>
                         <el-divider direction="vertical"></el-divider>
                         <span>{{ scope.row.applicant_sex }}</span>
                         <el-divider direction="vertical"></el-divider>
@@ -153,7 +153,7 @@
               </div>
             </div>
           </div>
-          <ShowResume v-else/>
+          <ShowResume v-else :applicant_id="selectedApplicantId"/>
         </transition>
       </div>
     </main>
@@ -203,8 +203,13 @@
                 ],*/
                 currentIndustry: "全部",
                 searchKey: "",
-                // conditionJob: ["不限","前端工程师","后端工程师","所有来自我发布的职位"],
-                conditionJob: ["不限"],
+                /*conditionJob: [
+                    { job_duty: "不限", job_industry: "全部"},
+                    { job_duty: "前端工程师", job_industry: "技术"},
+                    { job_duty: "后端工程师", job_industry: "技术"},
+                    { job_duty: "所有来自我发布的职位", job_industry: "职位所属行业"},
+                ],*/
+                conditionJob: [],
                 currentJob: "不限",
                 conditionDate: ["不限","今天","2天内","3天内","1周内","2周内","1个月内","3个月内","半年内","半年以上"],
                 currentDate: "不限",
@@ -276,25 +281,26 @@
                 pageSize: 10,
                 total: 1000,
                 
-                showResume: false
+                showResume: false,
+                selectedApplicantId: "",
+                // 保存选中的投递ID列表
+                selectedApplyIds: [],
             }
         },
         computed: {
             filterIndustry() {
-                return this.industryList.filter(item => item.job_num)
+                return this.industryList.filter(item => item.job_industry === "全部" || item.job_num)
             },
-            filterApplyList() {
-                if (Object.keys(this.applyList).length !== 0) {
-                    return this.applyList.filter(item => {
-                        // 行业筛选，不请求后台数据，简单过滤
-                        if(this.currentIndustry !== "全部") {
-                            return item.job_industry === this.currentIndustry
-                        } else {
-                            return this.applyList;
-                        }
+            filterConditionJob() {
+                if (this.currentIndustry !== "全部") {
+                    const filterArr = this.conditionJob.filter(item => item.job_industry === this.currentIndustry);
+                    filterArr.unshift({
+                        job_duty: "不限",
+                        job_industry: "全部"
                     });
+                    return filterArr;
                 }
-                return this.applyList;
+                return this.conditionJob
             }
         },
         created() {
@@ -319,6 +325,7 @@
                         job_num: allCount
                     }
                     this.industryList.unshift(obj);
+                    console.log(this.industryList)
                 }
             },
             async getConditionJob() {
@@ -329,7 +336,10 @@
                 console.log(res);
                 if(res.msg === "success") {
                     this.conditionJob = Object.assign([],[],res.data.conditionJob);
-                    this.conditionJob.unshift("不限");
+                    this.conditionJob.unshift({
+                        job_duty: "不限",
+                        job_industry: "全部"
+                    });
                 }
             },
             async getApplyList() {
@@ -341,6 +351,7 @@
                         pageSize: this.pageSize,
                         login_id: this.$store.state.login_id,
                         job_duty: this.currentJob !== "不限" ? this.currentJob : "",
+                        job_industry: this.currentIndustry !== "全部" ? this.currentIndustry : "",
                         condition: this.currentDate
                     }
                 })
@@ -353,11 +364,31 @@
                     this.applyList = Object.assign([],[],res.data.applyList);
                 }
             },
+            // 投递状态更新，批量更新（单个也传递数组形式）
+            async updateStatus(idArray, apply_status) {
+                const res = await this.$axios.request({
+                    url: `/apply/updateStatus`,
+                    method: "post",
+                    data: {
+                        idArray: idArray,
+                        apply_status: apply_status
+                    }
+                })
+                console.log(res);
+                if(res.msg === "success") {
+                    this.$message.success("投递状态已更新！");
+                    await this.getIndustryList();
+                    await this.getApplyList();
+                } else {
+                    this.$message.error("投递状态更新失败！");
+                }
+            },
             menuSelect(name) {
                 this.currentMenu = name;
             },
             industrySelect(industry) {
                 this.currentIndustry = industry;
+                this.getApplyList();
             },
             search() {
                 console.log(this.searchKey);
@@ -372,17 +403,23 @@
                 this.currentDate = value;
                 this.getApplyList();
             },
-            handleSelectionChange(val) {
-                console.log(val)
+            handleSelectionChange(applyList) {
+                console.log(applyList);
+                this.selectedApplyIds = Object.assign([],[],applyList.map(apply => apply.apply_id));
             },
             handleCommand(command) {
                 console.log(command);
                 let { row, column, key} = command;
                 if (row) {
                     switch(key){
-                        case this.userHandle[0]:
+                        case this.userHandle[0].label:
+                            this.updateStatus([row.apply_id], "3");
                             break;
-                        case this.userHandle[1]:
+                        case this.userHandle[1].label:
+                            this.updateStatus([row.apply_id], "4");
+                            break;
+                        case this.userHandle[2].label:
+                            this.updateStatus([row.apply_id], "0");
                             break;
                     }
                 }
@@ -404,6 +441,10 @@
                 // console.log(value)
                 this.currentPage = value;
                 this.getApplyList();
+            },
+            viewResume(applicant_id) {
+                this.selectedApplicantId = applicant_id;
+                this.showResume = true;
             }
         },
     }

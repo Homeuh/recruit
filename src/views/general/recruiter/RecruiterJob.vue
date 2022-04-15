@@ -67,7 +67,7 @@
             <div class="job-table">
               <el-table
                     ref="multipleTable"
-                    :data="filterJobList"
+                    :data="jobList"
                     stripe
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
@@ -309,7 +309,7 @@
                     ],
                 ],
                 currentPage: 1,
-                pageSize: 4,
+                pageSize: 1,
                 total: 1000,
 
                 previewVisible: false
@@ -319,20 +319,6 @@
             // 过滤所有行业中有职位的行业
             filterIndustry() {
                 return this.industryList.filter(item => item.job_num)
-            },
-            // 过滤不同状态下的职位列表：已发布 / 草稿箱 / 已下线
-            filterJobList() {
-                if (Object.keys(this.jobList).length !== 0) {
-                    const statusIndex = this.conditionStatus.indexOf(this.currentStatus).toString();
-                    return this.jobList.filter(item => {
-                        // 行业筛选，不请求后台数据，简单过滤
-                        if(this.currentIndustry !== "全部") {
-                            return item.job_status === statusIndex && item.job_industry === this.currentIndustry
-                        }
-                        return item.job_status === statusIndex
-                    });
-                }
-                return this.jobList;
             },
             // 过滤职位列表在不同状态下对表格行的操作：已发布 / 草稿箱 / 已下线
             filterUserHandle() {
@@ -373,6 +359,7 @@
                         pageSize: this.pageSize,
                         login_id: this.$store.state.login_id,
                         job_status: this.conditionStatus.indexOf(this.currentStatus).toString(),
+                        job_industry: this.currentIndustry !== "全部" ? this.currentIndustry : "",
                         condition: this.currentDate
                     }
                 })
@@ -401,7 +388,7 @@
                     }
                     await this.getJobList();
                 } else {
-                    this.$message.success("职位状态更新失败！");
+                    this.$message.error("职位状态更新失败！");
                 }
             },
             // 批量删除职位（单个也传递数组形式）
@@ -427,6 +414,7 @@
             // 行业选择
             industrySelect(industry) {
                 this.currentIndustry = industry;
+                this.getJobList();
             },
             // 搜索框查找
             search() {

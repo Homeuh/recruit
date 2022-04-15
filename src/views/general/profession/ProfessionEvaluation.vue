@@ -35,16 +35,21 @@
           </div>
         </div>
         <div class="job-tab margin-20per">
-          <el-link href="/profession/detail" :class="{'is-active': $route.path === '/profession/detail'}">职位详情</el-link>
-          <el-link href="/profession/evaluation" :class="{'is-active': $route.path === '/profession/evaluation'}">面试评价</el-link>
+            <el-link :href="'/profession/detail?job_id=' + $route.query.job_id"
+                     :class="{'is-active': $route.path === '/profession/detail'}"
+            >职位详情</el-link>
+            <el-link :href="'/profession/evaluation?job_id=' + $route.query.job_id"
+                     :class="{'is-active': $route.path === '/profession/evaluation'}"
+            >面试评价</el-link>
         </div>
       </div>
       <div class="evaluation-main margin-20per">
         <aside ref="aside">
           <div class="company-name">
             <el-link href="/company/detail">
-              <img :src="company.company_logo" :alt="company.company_name" :title="company.company_name"
-                   style="width: 100px; height: 100px; border-radius: 50%"/>
+                <img :src="!company.company_logo ? require('@/image/illustration/company_logo.png') : company.company_logo"
+                     :alt="company.company_name" :title="company.company_name"
+                     style="width: 100px; height: 100px"/>
               <h2>{{ company.company_name }}</h2>
             </el-link>
           </div>
@@ -64,7 +69,7 @@
             </p>
             <p>
               <i class="el-icon-diqiu"></i>
-              <span>{{ company.company_website }}</span>
+              <span :title="company.company_website">{{ company.company_website }}</span>
             </p>
           </div>
           <div class="similar-position">
@@ -112,23 +117,24 @@
         },
         data() {
             return {
-                jobData: {
-                    job_duty: "前端开发工程师",
-                    job_salary: "10-15K",
-                    recruit_num: 5,
-                    job_year: "1-3年",
-                    education: "本科",
-                    job_type: "全职",
-                    job_tag: ["JavaScript","Vue","React"],
-                    job_benefit: "1、提供在行业中非常具有竞争力的薪水\n2、为员工提供齐全的五险一金\n3、逢年过节有过节福利（包括六一儿童节）\n4、项目奖金、绩效奖、年终奖、体检、多次旅游等\n5、不定期的员工活动\n6、一年有两次调薪机会，表现好会有升职机会",
-                    job_description: "1、参与公司中小商户管理软件产品的设计与研发，打造领先的SaaS产品\n2、根据业务需求完成H5/小程序的前端交互开发\n3、持续优化SaaS产品的前端交互体验",
-                    job_requirement: "1、1年及以上前端开发经验，有移动Web开发经验或者小程序开发经验\n2、有HybridApp开发经验，熟练使用Angular或Vue经验优先\n3、有大型APP的前端架构部署和实践经验优先4、有责任感，对前端技术有激情，喜欢钻研，能快速接受和掌握新技术",
-                    office_address: "深圳南山区郎山路中同方信息港e栋",
-                    create_date: "三天前发布",
-                    recruiter_name: "王先生",
-                    recruiter_avatar: require("@/image/avatar/recruiter_wang.png"),
-                    recruiter_duty: "前端组长",
-                },
+                jobData: {},
+                // jobData: {
+                //     job_duty: "前端开发工程师",
+                //     job_salary: "10-15K",
+                //     recruit_num: 5,
+                //     job_year: "1-3年",
+                //     education: "本科",
+                //     job_type: "全职",
+                //     job_tag: ["JavaScript","Vue","React"],
+                //     job_benefit: "1、提供在行业中非常具有竞争力的薪水\n2、为员工提供齐全的五险一金\n3、逢年过节有过节福利（包括六一儿童节）\n4、项目奖金、绩效奖、年终奖、体检、多次旅游等\n5、不定期的员工活动\n6、一年有两次调薪机会，表现好会有升职机会",
+                //     job_description: "1、参与公司中小商户管理软件产品的设计与研发，打造领先的SaaS产品\n2、根据业务需求完成H5/小程序的前端交互开发\n3、持续优化SaaS产品的前端交互体验",
+                //     job_requirement: "1、1年及以上前端开发经验，有移动Web开发经验或者小程序开发经验\n2、有HybridApp开发经验，熟练使用Angular或Vue经验优先\n3、有大型APP的前端架构部署和实践经验优先4、有责任感，对前端技术有激情，喜欢钻研，能快速接受和掌握新技术",
+                //     office_address: "深圳南山区郎山路中同方信息港e栋",
+                //     create_date: "三天前发布",
+                //     recruiter_name: "王先生",
+                //     recruiter_avatar: require("@/image/avatar/recruiter_wang.png"),
+                //     recruiter_duty: "前端组长",
+                // },
                 evaluation: [
                     {
                         applicant_avatar: require("@/image/avatar/applicant_xie.png"),
@@ -227,14 +233,15 @@
                         create_date: "2022-3-1"
                     }
                 ],
-                company: {
-                    company_name: "迅雷网络",
-                    company_logo: require("@/image/company/xunlei.jpg"),
-                    company_tag: "移动互联网",
-                    company_type: "上市公司",
-                    company_size: "1000-5000人",
-                    company_website: "www.xunlei.com"
-                },
+                company: {},
+                // company: {
+                //     company_name: "迅雷网络",
+                //     company_logo: require("@/image/company/xunlei.jpg"),
+                //     company_tag: "移动互联网",
+                //     company_type: "上市公司",
+                //     company_size: "1000-5000人",
+                //     company_website: "www.xunlei.com"
+                // },
                 similarJob: [
                     {
                         job_duty: "Web前端开发工程师",
@@ -276,12 +283,89 @@
                 isApply: false
             }
         },
+        async created() {
+            this.$store.commit("setLogin");
+            await this.initData();
+
+            await this.judgeApply();
+        },
         methods: {
+            async initData() {
+                // console.log(this.$route);
+                const res = await this.$axios.request({
+                    url: `/job/info`,
+                    method: "get",
+                    params: {
+                        job_id: this.$route.query.job_id,
+                        isDetail: false // 是否获取职位详细数据（区分职位详情和职位评价的信息量返回）
+                    }
+                });
+                console.log(res);
+                if(res.msg === 'success'){
+                    if(res.data.jobData.job_tag) {
+                        res.data.jobData.job_tag = res.data.jobData.job_tag.split(",");
+                    }
+                    this.jobData = Object.assign({},{},res.data.jobData);
+
+                    res.data.company.company_logo = require("@/image/company/" + res.data.company.company_logo);
+                    this.company = Object.assign({},{},res.data.company);
+
+                    // 告知父组件已完成后台数据请求，用于招聘官职位详情预览
+                    // this.$emit("completeUpdate:profession", true);
+                }
+            },
             collect() {
                 this.isCollect = !this.isCollect;
             },
-            apply() {
-                this.isApply = !this.isApply;
+            async judgeApply() {
+                // 判断是否已投递
+                const res = await this.$axios.request({
+                    url: `/apply/info/${this.$store.state.login_id}/${this.jobData.job_id}`,
+                    method: "get",
+                })
+                console.log(res);
+                if(res.data.applyCount === 1){
+                    this.isApply = true;
+                }
+            },
+            async apply() {
+                if(!this.$store.state.login_id){
+                    return this.$message.error("当前状态尚未登录，请先注册登录完善信息！")
+                }
+                else if(this.$store.state.login_role !== "0") {
+                    return this.$message.error("角色身份不符，请切换为求职者身份！")
+                }
+                else {
+                    // 未投递
+                    if(!this.isApply) {
+                        const validReusme = await this.$axios.request({
+                            url: `/applicant/info/${this.$store.state.login_id}`,
+                            method: "get",
+                        })
+                        console.log(validReusme);
+                        if(validReusme.data.applicant.resume_percent <= 60) {
+                            this.$message.info("您的简历尚未完善！");
+                        }
+                        const res = await this.$axios.request({
+                            url: `/apply/saveOrUpdate?login_id=${this.$store.state.login_id}&job_id=${this.jobData.job_id}`,
+                            method: "post",
+                        })
+                        console.log(res)
+                        this.$message.success("投递成功");
+                    } else { // 已投递
+                        const res = await this.$axios.request({
+                            url: `/apply/delete?login_id=${this.$store.state.login_id}&job_id=${this.jobData.job_id}`,
+                            method: "delete",
+                        })
+                        console.log(res)
+                        if(res.data === "删除成功") {
+                            this.$message.success("投递已取消");
+                        } else {
+                            return this.$message.error("投递取消失败");
+                        }
+                    }
+                    this.isApply = !this.isApply;
+                }
             },
             filter(data) {
                 return data.split("\n");
@@ -346,6 +430,7 @@
                         color: @fontColor;
                     }
                     .job-tag{
+                        height: 45px;
                         line-height: 45px;
                         font-size: 12px;
                         span{
@@ -485,8 +570,13 @@
                             margin-left: 12px;
                         }
                         span{
+                            display: inline-block;
                             position: relative;
                             bottom: 2px;
+                            max-width: 210px;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
                         }
                     }
                 }

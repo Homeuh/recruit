@@ -81,7 +81,10 @@
                 </p>
               </li>
             </ul>
-            <el-link class="show-more">查看更多职位<i class="el-icon-arrow-right"></i></el-link>
+              <el-link :href="'/company/job?company_id=' + company.company_id"
+                       class="show-more"
+              >查看更多职位<i class="el-icon-arrow-right"></i>
+              </el-link>
           </div>
         </aside>
         <div class="company-evaluation" ref="company_evaluation">
@@ -297,7 +300,7 @@ export default {
                     this.recruit_job = Object.assign([],[],res.data.recruit_job);
                 }
             };
-            this.$axios.request([getCompany(),getRecruitJob()]);
+            this.$axios.all([getCompany(),getRecruitJob()]);
         },
         filter(data) {
             return data.split("\n");
