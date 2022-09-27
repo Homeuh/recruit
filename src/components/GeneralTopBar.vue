@@ -125,6 +125,7 @@ export default {
             this.$router.push("/login");
         },
         reloadStatus() {
+            this.$router.push("/home");
             this.$store.commit('removeLogin');
             this.$store.commit('setLogin');
         }

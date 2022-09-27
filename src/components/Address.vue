@@ -33,7 +33,7 @@
             AMap.event.addListener(auto, "select", e => {
                 console.log(e.poi.district + e.poi.address)
                 console.log(e);
-                this.value = e.poi.district + e.poi.address;
+                this.value = e.poi.district + e.poi.address + e.poi.name;
                 this.value = this.value.replace(/.+省/,"");
                 this.$emit("update:address", this.value);
             });//注册监听，当选中某条记录时会触发

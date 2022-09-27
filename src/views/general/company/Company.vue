@@ -174,7 +174,7 @@ export default {
             //     }
             // ],
             currentPage: 1,
-            pageSize: 4,
+            pageSize: 16,
             total: 1000,
             dialogVisible: false
         }

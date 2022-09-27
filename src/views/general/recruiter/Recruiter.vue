@@ -215,10 +215,10 @@
                     feedback_rate: "90",
                     login_date: "2天内"
                 },*/
-                recent_interview_num: 0,
-                interviewList: [],
-                // recent_interview_num: 8,
-                /*interviewList: [
+                // recent_interview_num: 0,
+                // interviewList: [],
+                recent_interview_num: 8,
+                interviewList: [
                     {
                         applicant_avatar: require("@/image/avatar/applicant_zhang.png"),
                         applicant_name: "张三",
@@ -287,7 +287,7 @@
                         interview_date: "2022-3-24 16:30",
                         interview_status: "2",
                     },
-                ],*/
+                ],
                 recent_apply_num: 0,
                 applyList: [],
                 // recent_apply_num: 14,

@@ -324,6 +324,12 @@
                 } else {
                     this.hasMemberCode = true;
                 }
+            },
+            "resumeForm.applicant_avatar": function() {
+                this.$refs.resumeForm.clearValidate(['applicant_avatar']);
+            },
+            "recruiterForm.recruiter_avatar": function() {
+                this.$refs.recruiterForm.clearValidate(['recruiter_avatar']);
             }
         },
         data() {

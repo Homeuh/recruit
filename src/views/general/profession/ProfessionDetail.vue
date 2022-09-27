@@ -322,10 +322,11 @@ export default {
             }
         },
         collect() {
+            if(!this.$store.state.login_role) return this.$message.error("请先登录");
             if(this.$store.state.login_role === "0") {
                 this.isCollect = !this.isCollect;
             } else {
-                this.$message.error("请先登录")
+                this.$message.error("角色身份不符，请切换为求职者身份！")
             }
         },
         async judgeApply() {

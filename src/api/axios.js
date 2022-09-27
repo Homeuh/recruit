@@ -2,7 +2,7 @@ import axios from 'axios'
 // import config from '../config'
 //设置配置: 根据 开发环境 和 生产环境 不一样
 // const baseURL = process.env.NODE_ENV === "development" ? config.baseURL.dev:config.baseURL.pro;
-const baseURL = 'http://localhost:8085/recruit/'
+const baseURL = '/api'
 
 class HttpRequest{
     constructor(baseURL) {

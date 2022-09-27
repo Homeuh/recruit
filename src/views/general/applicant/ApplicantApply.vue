@@ -281,7 +281,7 @@
                     },
                 ],*/
                 currentPage: 1,
-                pageSize: 1,
+                pageSize: 6,
                 total: 1000,
             }
         },

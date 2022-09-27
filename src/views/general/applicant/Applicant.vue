@@ -77,7 +77,7 @@
                 <li v-for="(apply,index) in applyList" :key="apply.job_duty + index">
                   <div class="apply-job">
                     <div class="job-request">
-                      <el-link href="/profession/detail">
+                      <el-link :href="'/profession/detail?job_id=' + apply.job_id">
                         <span class="job-duty">{{ apply.job_duty }}</span>
                         <span class="job-salary">{{ apply.job_salary }}</span>
                       </el-link>
@@ -90,11 +90,11 @@
                       </p>
                     </div>
                     <div class="company-info">
-                      <el-link href="/company/detail" class="company-logo">
+                      <el-link :href="'/company/detail?company_id=' + apply.company_id" class="company-logo">
                         <img :src="apply.company_logo" :alt="apply.company_name"
                              style="width: 56px; height: 56px; margin-right: 16px"/>
                       </el-link>
-                      <el-link href="/company/detail" class="company-name">{{ apply.company_name}}</el-link>
+                      <el-link :href="'/company/detail?company_id=' + apply.company_id" class="company-name">{{ apply.company_name}}</el-link>
                       <p class="company-description">
                         <span class="company-tag" :title="apply.company_tag">{{ apply.company_tag}}</span>
                         <el-divider direction="vertical"></el-divider>
@@ -214,7 +214,7 @@ export default {
             ],
             currentMenu: "个人中心",
             interview_num: 3,
-            /*interviewList: [
+            interviewList: [
                 {
                     company_logo: require("@/image/company/xunlei.jpg"),
                     company_name: "迅雷网络",
@@ -239,8 +239,8 @@ export default {
                     job_salary: "25-40K",
                     interview_date: "2022-3-21 16:30",
                 }
-            ],*/
-            // apply_num: 17,
+            ],
+            apply_num: 17,
             /*applyList: [
                 {
                     job_duty: "前端开发工程师",
@@ -344,8 +344,8 @@ export default {
                 max_salary: 14,
                 arrive_date: "2周内"
             },*/
-            interviewList: [],
-            apply_num: 0,
+            // interviewList: [],
+            // apply_num: 0,
             applyList: [],
             applicant: {},
             jobIntention: {},
